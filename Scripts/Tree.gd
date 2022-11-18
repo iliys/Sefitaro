@@ -40,7 +40,11 @@ const CHANNELS_old = {
 	"Malkhut": ["Netzah", "Hod", "Yesod", "Malkhut"]
 }
 
-var arcanePos = {
+var Sefirah_Position = {
+	
+}
+
+const ARCANE_POS = {
 	"The Fool": ["Kether", "Hokmah"],
 	"The Magician": ["Kether", "Binah"],
 	"The High Priestess": ["Kether", "Tiferet"],
@@ -64,6 +68,8 @@ var arcanePos = {
 	"Judgement": ["Hod", "Malkhut"],
 	"The World": ["Yesod", "Malkhut"]
 }
+
+
 
 var arcaneActive = {
 	"The Fool": false,
@@ -91,8 +97,8 @@ var arcaneActive = {
 	}
 
 func _ready():
-	pass
-	#print(sefirahPosition)
+	get_Sefirah_Position()
+	print(Sefirah_Position)
 	
 func _process(delta):
 	pass
@@ -121,34 +127,24 @@ func changePos(pos):
 	#print(sefirahCurrent)
 	arcaneGet(sefirahLast, sefirahCurrent)
 
+func get_Sefirah_Position():
+	for sefirah in get_children():
+		Sefirah_Position[sefirah.get_name()] = sefirah.position
+
 func playerMove(pos):
-	match pos:
-		"Daath":
-			playerPos = $Daath
-		"Kether":
-			playerPos = $Kether
-		"Hokmah":
-			playerPos = $Hokmah
-		"Binah":
-			playerPos = $Binah
-		"Hesed":
-			playerPos = $Hesed
-		"Gevurah":
-			playerPos = $Gevurah
-		"Tiferet":
-			playerPos = $Tiferet
-		"Netzah":
-			playerPos = $Netzah
-		"Hod":
-			playerPos = $Hod
-		"Yesod":
-			playerPos = $Yesod
-		"Malkhut":
-			playerPos = $Malkhut
-	player.position = playerPos.position
+	player.position = Sefirah_Position.get(pos)
+	playerPos = pos
 
 func arcaneGet(sefirahLast, sefirahCurrent):
-	for card in arcanePos:
-		if arcanePos[card].has(sefirahLast) && arcanePos[card].has(sefirahCurrent):
+	for card in ARCANE_POS:
+		if ARCANE_POS[card].has(sefirahLast) && ARCANE_POS[card].has(sefirahCurrent):
 			arcaneActive[card] = true
 			#print(card)
+
+func _draw():
+	draw_Channels()
+	
+func draw_Channels():
+	for channel in ARCANE_POS:
+		draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.red)
+		#print(ARCANE_POS.get(channel)[0])
