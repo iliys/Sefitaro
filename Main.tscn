@@ -1,0 +1,233 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Scripts/Tree.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Malkhut.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Yesod.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Tree.jpg" type="Texture" id=4]
+[ext_resource path="res://Scripts/Hod.gd" type="Script" id=5]
+[ext_resource path="res://Scripts/Tiferet.gd" type="Script" id=6]
+[ext_resource path="res://Scripts/Hesed.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/Netzah.gd" type="Script" id=8]
+[ext_resource path="res://Scripts/Gevurah.gd" type="Script" id=9]
+[ext_resource path="res://Scripts/Binah.gd" type="Script" id=10]
+[ext_resource path="res://Scripts/Hokmah.gd" type="Script" id=11]
+[ext_resource path="res://Scripts/Kether.gd" type="Script" id=12]
+[ext_resource path="res://Scripts/Daath.gd" type="Script" id=13]
+[ext_resource path="res://Scripts/Player.gd" type="Script" id=14]
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 40.0
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 40.0
+
+[node name="Main" type="Node2D"]
+
+[node name="Sprite" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+position = Vector2( 507.625, 300.542 )
+scale = Vector2( 0.583683, 0.583683 )
+texture = ExtResource( 4 )
+
+[node name="Sefirot" type="Node2D" parent="."]
+script = ExtResource( 1 )
+
+[node name="Daath" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 506, 198 )
+script = ExtResource( 13 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Daath"]
+margin_left = -30.0
+margin_top = -28.0
+margin_right = 28.0
+margin_bottom = 30.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Daath"]
+shape = SubResource( 2 )
+
+[node name="Kether" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 506, 91 )
+script = ExtResource( 12 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Kether"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Kether"]
+margin_left = -30.0
+margin_top = -29.0
+margin_right = 29.0
+margin_bottom = 30.0
+mouse_filter = 2
+color = Color( 1, 0, 0, 1 )
+
+[node name="Hokmah" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 600, 161 )
+script = ExtResource( 11 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hokmah"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Hokmah"]
+margin_left = -26.0
+margin_top = -26.0
+margin_right = 26.0
+margin_bottom = 26.0
+mouse_filter = 2
+color = Color( 0.501961, 0, 1, 1 )
+
+[node name="Binah" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 413, 159 )
+script = ExtResource( 10 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Binah"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Binah"]
+margin_left = -28.0
+margin_top = -25.0
+margin_right = 25.0
+margin_bottom = 28.0
+mouse_filter = 2
+color = Color( 1, 0.501961, 0, 1 )
+
+[node name="Hesed" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 600, 261 )
+script = ExtResource( 7 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hesed"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Hesed"]
+margin_left = -28.0
+margin_top = -28.0
+margin_right = 30.0
+margin_bottom = 30.0
+mouse_filter = 2
+color = Color( 0, 0.501961, 0.501961, 1 )
+
+[node name="Gevurah" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 413, 262 )
+script = ExtResource( 9 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Gevurah"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Gevurah"]
+margin_left = -31.0
+margin_top = -30.0
+margin_right = 30.0
+margin_bottom = 31.0
+mouse_filter = 2
+color = Color( 1, 1, 0, 1 )
+
+[node name="Tiferet" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 507, 328 )
+script = ExtResource( 6 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Tiferet"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Tiferet"]
+margin_left = -31.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 31.0
+mouse_filter = 2
+color = Color( 0, 1, 0, 1 )
+
+[node name="Netzah" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 597, 379 )
+script = ExtResource( 8 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Netzah"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Netzah"]
+margin_left = -28.0
+margin_top = -28.0
+margin_right = 33.0
+margin_bottom = 33.0
+mouse_filter = 2
+color = Color( 1, 0.501961, 0.501961, 1 )
+
+[node name="Hod" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 413, 382 )
+script = ExtResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hod"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Hod"]
+margin_left = -31.0
+margin_top = -29.0
+margin_right = 31.0
+margin_bottom = 33.0
+mouse_filter = 2
+color = Color( 0, 1, 0.501961, 1 )
+
+[node name="Yesod" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 506, 437 )
+script = ExtResource( 3 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Yesod"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Yesod"]
+margin_left = -31.0
+margin_top = -29.0
+margin_right = 30.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 1, 0, 0.501961, 1 )
+
+[node name="Malkhut" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 507, 541 )
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Malkhut"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Malkhut"]
+margin_left = -31.0
+margin_top = -31.0
+margin_right = 32.0
+margin_bottom = 32.0
+mouse_filter = 2
+
+[node name="Player" type="Node2D" parent="."]
+position = Vector2( 506, 541 )
+script = ExtResource( 14 )
+
+[node name="ColorRect" type="ColorRect" parent="Player"]
+margin_left = -19.0
+margin_top = -18.0
+margin_right = 21.0
+margin_bottom = 22.0
+color = Color( 0, 0.462745, 1, 0.521569 )
+
+[node name="HUD" type="Node" parent="."]
+
+[connection signal="mouse_entered" from="Sefirot/Daath" to="Sefirot/Daath" method="_on_Daath_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Daath" to="Sefirot/Daath" method="_on_Daath_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Kether" to="Sefirot/Kether" method="_on_Kether_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Kether" to="Sefirot/Kether" method="_on_Kether_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Hokmah" to="Sefirot/Hokmah" method="_on_Hokmah_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Hokmah" to="Sefirot/Hokmah" method="_on_Hokmah_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Binah" to="Sefirot/Binah" method="_on_Binah_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Binah" to="Sefirot/Binah" method="_on_Binah_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Hesed" to="Sefirot/Hesed" method="_on_Hesed_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Hesed" to="Sefirot/Hesed" method="_on_Hesed_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Gevurah" to="Sefirot/Gevurah" method="_on_Gevurah_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Gevurah" to="Sefirot/Gevurah" method="_on_Gevurah_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Tiferet" to="Sefirot/Tiferet" method="_on_Tiferet_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Tiferet" to="Sefirot/Tiferet" method="_on_Tiferet_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Netzah" to="Sefirot/Netzah" method="_on_Netzah_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Netzah" to="Sefirot/Netzah" method="_on_Netzah_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Yesod" to="Sefirot/Yesod" method="_on_Yesod_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Yesod" to="Sefirot/Yesod" method="_on_Yesod_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Malkhut" to="Sefirot/Malkhut" method="_on_Malkhut_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Malkhut" to="Sefirot/Malkhut" method="_on_Malkhut_mouse_exited"]
