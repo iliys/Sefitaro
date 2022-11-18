@@ -1,9 +1,8 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Scripts/Tree.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/Malkhut.gd" type="Script" id=2]
 [ext_resource path="res://Scripts/Yesod.gd" type="Script" id=3]
-[ext_resource path="res://Assets/Tree.jpg" type="Texture" id=4]
 [ext_resource path="res://Scripts/Hod.gd" type="Script" id=5]
 [ext_resource path="res://Scripts/Tiferet.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/Hesed.gd" type="Script" id=7]
@@ -22,12 +21,13 @@ radius = 40.0
 radius = 40.0
 
 [node name="Main" type="Node2D"]
+position = Vector2( -2, 0 )
 
-[node name="Sprite" type="Sprite" parent="."]
-modulate = Color( 0, 0, 0, 1 )
-position = Vector2( 507.625, 300.542 )
-scale = Vector2( 0.583683, 0.583683 )
-texture = ExtResource( 4 )
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
 
 [node name="Sefirot" type="Node2D" parent="."]
 script = ExtResource( 1 )
@@ -37,178 +37,211 @@ visible = false
 position = Vector2( 506, 198 )
 script = ExtResource( 13 )
 
-[node name="ColorRect" type="ColorRect" parent="Sefirot/Daath"]
-margin_left = -30.0
-margin_top = -28.0
-margin_right = 28.0
-margin_bottom = 30.0
-mouse_filter = 2
-color = Color( 0, 0, 0, 1 )
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Daath"]
 shape = SubResource( 2 )
 
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Daath"]
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
+
 [node name="Kether" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 506, 91 )
+position = Vector2( 702, 91 )
 script = ExtResource( 12 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Kether"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Kether"]
-margin_left = -30.0
-margin_top = -29.0
-margin_right = 29.0
-margin_bottom = 30.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0, 0, 1 )
 
 [node name="Hokmah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 600, 161 )
+position = Vector2( 795, 161 )
 script = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hokmah"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Hokmah"]
-margin_left = -26.0
-margin_top = -26.0
-margin_right = 26.0
-margin_bottom = 26.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 0.501961, 0, 1, 1 )
 
 [node name="Binah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 413, 159 )
+position = Vector2( 608, 161 )
 script = ExtResource( 10 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Binah"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Binah"]
-margin_left = -28.0
-margin_top = -25.0
-margin_right = 25.0
-margin_bottom = 28.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0.501961, 0, 1 )
 
 [node name="Hesed" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 600, 261 )
+position = Vector2( 795, 261 )
 script = ExtResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hesed"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Hesed"]
-margin_left = -28.0
-margin_top = -28.0
-margin_right = 30.0
-margin_bottom = 30.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 0, 0.501961, 0.501961, 1 )
 
 [node name="Gevurah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 413, 262 )
+position = Vector2( 608, 261 )
 script = ExtResource( 9 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Gevurah"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Gevurah"]
-margin_left = -31.0
-margin_top = -30.0
-margin_right = 30.0
-margin_bottom = 31.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 1, 0, 1 )
 
 [node name="Tiferet" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 507, 328 )
+position = Vector2( 702, 328 )
 script = ExtResource( 6 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Tiferet"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Tiferet"]
-margin_left = -31.0
+margin_left = -32.0
 margin_top = -32.0
 margin_right = 32.0
-margin_bottom = 31.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 0, 1, 0, 1 )
 
 [node name="Netzah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 600, 379 )
+position = Vector2( 795, 379 )
 script = ExtResource( 8 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Netzah"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Netzah"]
-margin_left = -31.0
-margin_top = -29.0
-margin_right = 30.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
 margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0.501961, 0.501961, 1 )
 
 [node name="Hod" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 413, 379 )
+position = Vector2( 608, 379 )
 script = ExtResource( 5 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hod"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Hod"]
-margin_left = -31.0
+margin_left = -32.0
 margin_top = -32.0
-margin_right = 31.0
-margin_bottom = 30.0
+margin_right = 32.0
+margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 0, 1, 0.501961, 1 )
 
 [node name="Yesod" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 506, 437 )
+position = Vector2( 702, 437 )
 script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Yesod"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Yesod"]
-margin_left = -31.0
-margin_top = -29.0
-margin_right = 30.0
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
 margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0, 0.501961, 1 )
 
 [node name="Malkhut" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 507, 541 )
+position = Vector2( 702, 543 )
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Malkhut"]
 shape = SubResource( 1 )
 
 [node name="ColorRect" type="ColorRect" parent="Sefirot/Malkhut"]
-margin_left = -31.0
-margin_top = -31.0
+margin_left = -32.0
+margin_top = -32.0
 margin_right = 32.0
 margin_bottom = 32.0
 mouse_filter = 2
 
 [node name="Player" type="Node2D" parent="."]
-position = Vector2( 506, 541 )
+position = Vector2( 702, 543 )
 script = ExtResource( 14 )
 
-[node name="ColorRect" type="ColorRect" parent="Player"]
-margin_left = -19.0
-margin_top = -18.0
-margin_right = 21.0
-margin_bottom = 22.0
-color = Color( 0, 0.462745, 1, 0.521569 )
+[node name="ColorRect3" type="ColorRect" parent="Player"]
+margin_left = -28.0
+margin_top = 1.0
+margin_right = 12.0
+margin_bottom = 41.0
+rect_rotation = -45.2124
+color = Color( 0.00392157, 0.603922, 0, 1 )
 
-[node name="HUD" type="Node" parent="."]
+[node name="ColorRect2" type="ColorRect" parent="Player"]
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 30.0
+margin_bottom = 30.0
+rect_scale = Vector2( 0.8, 0.8 )
+color = Color( 0.0784314, 0.0784314, 0.0784314, 1 )
+
+[node name="ColorRect3" type="ColorRect" parent="Player/ColorRect2"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 48.0
+margin_bottom = 48.0
+
+[node name="ColorRect" type="ColorRect" parent="Player/ColorRect2/ColorRect3"]
+margin_left = 3.0
+margin_top = 3.0
+margin_right = 43.0
+margin_bottom = 43.0
+color = Color( 1, 0, 0.701961, 0.631373 )
+
+[node name="ColorRect4" type="ColorRect" parent="Player/ColorRect2/ColorRect3/ColorRect"]
+margin_left = -7.5
+margin_top = 21.25
+margin_right = 32.5
+margin_bottom = 61.25
+rect_rotation = -45.2124
+color = Color( 0, 0, 0, 1 )
+
+[node name="HUD" type="Control" parent="."]
+margin_top = 1.0
+margin_right = 40.0
+margin_bottom = 41.0
 
 [connection signal="mouse_entered" from="Sefirot/Daath" to="Sefirot/Daath" method="_on_Daath_mouse_entered"]
 [connection signal="mouse_exited" from="Sefirot/Daath" to="Sefirot/Daath" method="_on_Daath_mouse_exited"]
