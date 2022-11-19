@@ -11,6 +11,10 @@ var sefirahLast
 var mouseTarget
 var targetName
 
+var lines = []
+
+var Sefirah_Position = {}
+
 const CHANNELS = {
 	"Daath": [],
 	"Kether": ["Hokmah", "Binah", "Tiferet"],
@@ -39,8 +43,6 @@ const CHANNELS_old = {
 	"Yesod": ["Tiferet", "Netzah", "Hod", "Yesod", "Malkhut"],
 	"Malkhut": ["Netzah", "Hod", "Yesod", "Malkhut"]
 }
-
-var Sefirah_Position = {}
 
 const ARCANE_POS = {
 	"The Fool": ["Kether", "Hokmah"],
@@ -92,8 +94,6 @@ var arcaneActive = {
 	"The World": false
 	}
 
-var lines = []
-
 func _ready():
 	get_Sefirah_Position()
 	print(Sefirah_Position)
@@ -125,13 +125,14 @@ func changePos(pos):
 	#print(sefirahCurrent)
 	arcaneGet(sefirahLast, sefirahCurrent)
 
-func get_Sefirah_Position():
-	for sefirah in get_children():
-		Sefirah_Position[sefirah.get_name()] = sefirah.global_position
-
 func playerMove(pos):
 	player.position = Sefirah_Position.get(pos)
 	playerPos = pos
+	player.health -= 1
+
+func get_Sefirah_Position():
+	for sefirah in get_children():
+		Sefirah_Position[sefirah.get_name()] = sefirah.global_position
 
 func arcaneGet(sefirahLast, sefirahCurrent):
 	for card in ARCANE_POS:
@@ -150,4 +151,3 @@ func draw_Channels():
 		else:
 			draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], 
 			Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.red, 2)
-
