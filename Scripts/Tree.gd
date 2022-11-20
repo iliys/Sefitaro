@@ -15,6 +15,8 @@ var lines = []
 
 var Sefirah_Position = {}
 
+signal card_Update
+
 const CHANNELS = {
 	"Daath": [],
 	"Kether": ["Hokmah", "Binah", "Tiferet"],
@@ -94,9 +96,59 @@ var arcaneActive = {
 	"The World": false
 	}
 
+const ARCANEDESCRIPTION = {
+	"The Fool": "Перемещает в Малькут и изучает его",
+	"The Magician": "Дает любую карту, изучает примыкающие к ней сефирот",
+	"The High Priestess": "Восстанавливает 2 силы. Даёт случайную карту из трех",
+	"The Empress": "Восстанавливает 4 силы, даёт случайную карту за восстановленную сверх предела силу",
+	"The Emperor": "Перемещает в выбранную сефиру и изучает её",
+	"The Hierophant": "Восстанавливает силу, изучает сефиру",
+	"The Lovers": "Изучает последнюю сефиру. забывает текущую",
+	"The Chariot": "Перемещает в следующую сефиру, изучает её",
+	"Strength": "Восстанавливает силу, изучает сефиру",
+	"The Hermit": "Изучает сефиру, активирует ближайшую аркану",
+	"Wheel of Fortune": "Даёт случайную карту",
+	"Justice": "Уравнивает уровни прошлой и текущей сефир",
+	"The Hanged Man": "Перемещает на предыдущую сефиру",
+	"Death": "Сбрасывает все карты, перемещает в Малькут, восстанавливает силы",
+	"Temperance": "Уравнивает уровни между текущей и последней сефирой",
+	"The Devil": "Перемещает в случайную сефиру, изучает её",
+	"The Tower": "Сбрасывает все карты",
+	"The Star": "Перемещает игрока в выбранную сефиру",
+	"The Moon": "Перемещает игрока в случайную сефиру",
+	"The Sun": "Восстанавливает все силы",
+	"Judgement": "Сбрасывает выбранную карту, даёт случайную карту из трех",
+	"The World": "Изучает сефиру N раз, где N - число карт на руке, которые пропадают. Восстанавливает все силы"
+	}
+
+const ARCANETRANSLATION = {
+	"The Fool": "Дур",
+	"The Magician": "Маг",
+	"The High Priestess": "Жрица",
+	"The Empress": "Императрица",
+	"The Emperor": "Император",
+	"The Hierophant": "Папа",
+	"The Lovers": "Любовники",
+	"The Chariot": "Колесница",
+	"Strength": "Сила",
+	"The Hermit": "Отшельник",
+	"Wheel of Fortune": "Kолeco Фopтуны",
+	"Justice": "Cпpaвeдливocть",
+	"The Hanged Man": "Повешенный",
+	"Death": "Смерть",
+	"Temperance": "Умepeннocть",
+	"The Devil": "Дьявoл",
+	"The Tower": "Бaшня",
+	"The Star": "Звeздa",
+	"The Moon": "Лунa",
+	"The Sun": "Coлнцe",
+	"Judgement": "Cуд",
+	"The World": "Мир"
+	}
+	
 func _ready():
 	get_Sefirah_Position()
-	print(Sefirah_Position)
+	#print(Sefirah_Position)
 
 func _process(delta):
 	update()
@@ -114,16 +166,16 @@ func on_Mouse_Target_out(target):
 
 func _input(event):
 	if event is InputEventMouseButton && event.is_pressed():
-		if !fighting && CHANNELS.get(sefirahCurrent).has(mouseTarget):
+		if !fighting && mouseTarget:
 			changePos(mouseTarget)
 
 func changePos(pos):
 	sefirahLast = sefirahCurrent
 	sefirahCurrent = mouseTarget
 	playerMove(pos)
+	arcaneGet(sefirahLast, sefirahCurrent)
 	#print(sefirahLast)
 	#print(sefirahCurrent)
-	arcaneGet(sefirahLast, sefirahCurrent)
 
 func playerMove(pos):
 	player.position = Sefirah_Position.get(pos)
@@ -138,6 +190,7 @@ func arcaneGet(sefirahLast, sefirahCurrent):
 	for card in ARCANE_POS:
 		if ARCANE_POS[card].has(sefirahLast) && ARCANE_POS[card].has(sefirahCurrent):
 			arcaneActive[card] = true
+			emit_signal("card_Update", arcaneActive[card], card)
 			print(card)
 
 func _draw():

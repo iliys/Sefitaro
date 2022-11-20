@@ -15,7 +15,7 @@ run/main_scene="res://Main.tscn"
 
 [display]
 
-window/size/width=1920
+window/size/width=1080
 window/size/height=1080
 
 [gui]

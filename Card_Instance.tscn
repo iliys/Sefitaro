@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Scripts/Arcane.gd" type="Script" id=1]
+[ext_resource path="res://Exo2-Italic-VariableFont_wght.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://theme.tres" type="Theme" id=3]
+
+[sub_resource type="DynamicFont" id=2]
+size = 22
+outline_size = 2
+outline_color = Color( 0.25098, 0.207843, 0.32549, 1 )
+extra_spacing_top = 3
+extra_spacing_bottom = 3
+font_data = ExtResource( 2 )
+
+[node name="Card_Instance" type="Label" groups=["Arcane"]]
+margin_top = 36.0
+margin_right = 200.0
+margin_bottom = 50.0
+mouse_filter = 1
+theme = ExtResource( 3 )
+custom_fonts/font = SubResource( 2 )
+text = "Мир"
+script = ExtResource( 1 )
+
+[connection signal="mouse_entered" from="." to="." method="_on_Arcane_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_Arcane_mouse_exited"]

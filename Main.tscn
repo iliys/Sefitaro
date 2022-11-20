@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Scripts/Tree.gd" type="Script" id=1]
 [ext_resource path="res://Scripts/Malkhut.gd" type="Script" id=2]
@@ -14,6 +14,7 @@
 [ext_resource path="res://Scripts/Kether.gd" type="Script" id=12]
 [ext_resource path="res://Scripts/Daath.gd" type="Script" id=13]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=14]
+[ext_resource path="res://VBoxContainer.gd" type="Script" id=15]
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 40.0
@@ -23,13 +24,15 @@ radius = 40.0
 
 [sub_resource type="DynamicFont" id=3]
 size = 32
+outline_size = 3
+outline_color = Color( 0.313726, 0.0666667, 0.564706, 1 )
 font_data = ExtResource( 4 )
 
 [node name="Main" type="Node2D"]
 position = Vector2( -2, 0 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_right = 1920.0
+margin_right = 1091.0
 margin_bottom = 1080.0
 mouse_filter = 2
 color = Color( 0, 0, 0, 1 )
@@ -54,7 +57,7 @@ mouse_filter = 2
 color = Color( 0, 0, 0, 1 )
 
 [node name="Kether" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1481, 283 )
+position = Vector2( 667, 277 )
 script = ExtResource( 12 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Kether"]
@@ -69,7 +72,7 @@ mouse_filter = 2
 color = Color( 1, 0, 0, 1 )
 
 [node name="Hokmah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1574, 353 )
+position = Vector2( 760, 347 )
 script = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hokmah"]
@@ -84,7 +87,7 @@ mouse_filter = 2
 color = Color( 0.501961, 0, 1, 1 )
 
 [node name="Binah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1387, 353 )
+position = Vector2( 573, 347 )
 script = ExtResource( 10 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Binah"]
@@ -99,7 +102,7 @@ mouse_filter = 2
 color = Color( 1, 0.501961, 0, 1 )
 
 [node name="Hesed" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1574, 453 )
+position = Vector2( 760, 447 )
 script = ExtResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hesed"]
@@ -114,7 +117,7 @@ mouse_filter = 2
 color = Color( 0, 0.501961, 0.501961, 1 )
 
 [node name="Gevurah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1387, 453 )
+position = Vector2( 573, 447 )
 script = ExtResource( 9 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Gevurah"]
@@ -129,7 +132,7 @@ mouse_filter = 2
 color = Color( 1, 1, 0, 1 )
 
 [node name="Tiferet" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1481, 520 )
+position = Vector2( 667, 514 )
 script = ExtResource( 6 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Tiferet"]
@@ -144,7 +147,7 @@ mouse_filter = 2
 color = Color( 0, 1, 0, 1 )
 
 [node name="Netzah" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1574, 571 )
+position = Vector2( 760, 565 )
 script = ExtResource( 8 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Netzah"]
@@ -158,23 +161,8 @@ margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0.501961, 0.501961, 1 )
 
-[node name="Hod" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1387, 571 )
-script = ExtResource( 5 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hod"]
-shape = SubResource( 1 )
-
-[node name="ColorRect" type="ColorRect" parent="Sefirot/Hod"]
-margin_left = -32.0
-margin_top = -32.0
-margin_right = 32.0
-margin_bottom = 32.0
-mouse_filter = 2
-color = Color( 0, 1, 0.501961, 1 )
-
 [node name="Yesod" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1481, 629 )
+position = Vector2( 667, 623 )
 script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Yesod"]
@@ -188,8 +176,23 @@ margin_bottom = 32.0
 mouse_filter = 2
 color = Color( 1, 0, 0.501961, 1 )
 
+[node name="Hod" type="Area2D" parent="Sefirot" groups=["node"]]
+position = Vector2( 573, 565 )
+script = ExtResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Hod"]
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Sefirot/Hod"]
+margin_left = -32.0
+margin_top = -32.0
+margin_right = 32.0
+margin_bottom = 32.0
+mouse_filter = 2
+color = Color( 0, 1, 0.501961, 1 )
+
 [node name="Malkhut" type="Area2D" parent="Sefirot" groups=["node"]]
-position = Vector2( 1481, 735 )
+position = Vector2( 667, 729 )
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Malkhut"]
@@ -203,7 +206,7 @@ margin_bottom = 32.0
 mouse_filter = 2
 
 [node name="Player" type="Node2D" parent="."]
-position = Vector2( 1481, 739 )
+position = Vector2( 667, 733 )
 script = ExtResource( 14 )
 
 [node name="ColorRect3" type="ColorRect" parent="Player"]
@@ -248,11 +251,18 @@ margin_top = 1.0
 margin_right = 551.0
 margin_bottom = 599.0
 
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD"]
+margin_left = 247.0
+margin_top = 171.0
+margin_right = 447.0
+margin_bottom = 831.0
+script = ExtResource( 15 )
+
 [node name="HP" type="Label" parent="HUD"]
-margin_left = 1063.0
-margin_top = 116.0
-margin_right = 1245.0
-margin_bottom = 185.0
+margin_left = 247.0
+margin_top = 110.0
+margin_right = 429.0
+margin_bottom = 179.0
 custom_fonts/font = SubResource( 3 )
 text = "Усердие:"
 
@@ -280,9 +290,9 @@ text = "5"
 [connection signal="mouse_exited" from="Sefirot/Tiferet" to="Sefirot/Tiferet" method="_on_Tiferet_mouse_exited"]
 [connection signal="mouse_entered" from="Sefirot/Netzah" to="Sefirot/Netzah" method="_on_Netzah_mouse_entered"]
 [connection signal="mouse_exited" from="Sefirot/Netzah" to="Sefirot/Netzah" method="_on_Netzah_mouse_exited"]
-[connection signal="mouse_entered" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_entered"]
-[connection signal="mouse_exited" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_exited"]
 [connection signal="mouse_entered" from="Sefirot/Yesod" to="Sefirot/Yesod" method="_on_Yesod_mouse_entered"]
 [connection signal="mouse_exited" from="Sefirot/Yesod" to="Sefirot/Yesod" method="_on_Yesod_mouse_exited"]
+[connection signal="mouse_entered" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_entered"]
+[connection signal="mouse_exited" from="Sefirot/Hod" to="Sefirot/Hod" method="_on_Hod_mouse_exited"]
 [connection signal="mouse_entered" from="Sefirot/Malkhut" to="Sefirot/Malkhut" method="_on_Malkhut_mouse_entered"]
 [connection signal="mouse_exited" from="Sefirot/Malkhut" to="Sefirot/Malkhut" method="_on_Malkhut_mouse_exited"]

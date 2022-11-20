@@ -9,7 +9,7 @@ func health_set(new_value):
 	health = new_value
 	if health > health_max:
 		health = health_max
-	if health <= 0:
+	if health < 0:
 		death()
 	HP_Score.text = str(health)
 	
@@ -17,4 +17,4 @@ func health_get():
 	return health
 
 func death():
-	pass
+	get_tree().reload_current_scene()
