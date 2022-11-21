@@ -4,7 +4,7 @@ signal card_Update
 
 onready var player = $"../Player"
 onready var playerPos = $Malkhut
-onready var Cards = $"../HUD/VBoxContainer"
+onready var Cards = $"../HUD/CardContainer"
 
 var fighting = false
 
@@ -160,11 +160,17 @@ func on_Mouse_Target(target):
 	targetName = target.get_name()
 	if CHANNELS.get(sefirahCurrent).has(targetName):
 		mouseTarget = targetName
-		target.scale = Vector2( 1.3, 1.3 )
+		highlight(target)
 
 func on_Mouse_Target_out(target):
 	mouseTarget = null
-	target.scale = Vector2( 1, 1 )
+	highlight(target, false)
+
+func highlight(target, on = true):
+	if on:
+		target.scale = Vector2( 1.3, 1.3 )
+	else:
+		target.scale = Vector2( 1, 1 )
 
 func _input(event):
 	if event is InputEventMouseButton && event.is_pressed():
@@ -190,11 +196,12 @@ func get_Sefirah_Position():
 		Sefirah_Reference[sefirah_Name] = sefirah
 		Sefirah_Position[sefirah_Name] = sefirah.global_position
 
-func arcaneGet(sefirahLast, sefirahCurrent):
+func arcaneGet(sefirahLast, sefirahCurrent): #получаем карту в инвентарь
 	for card in ARCANE_POS:
 		if ARCANE_POS[card].has(sefirahLast) && ARCANE_POS[card].has(sefirahCurrent):
-			arcaneActive[card] = true
-			emit_signal("card_Update", arcaneActive[card], card)
+			#arcaneActive[card] = true
+			#принимает - Arcane (карты)
+			emit_signal("card_Update", card)
 			print(card + " collected")
 
 func _draw():
@@ -202,7 +209,7 @@ func _draw():
 
 func draw_Channels():
 	for channel in ARCANE_POS:
-		if arcaneActive.get(channel):
+		if Cards.child_Dict[channel].is_Collected:
 			draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], 
 			Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.green, 3) 
 		else:
@@ -212,18 +219,67 @@ func draw_Channels():
 # действия карт
 func card_Effect(card_name):
 	match card_name:
+		"The Fool":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Magician":
+			Cards.child_Dict[card_name].set_status("white")
+		"The High Priestess":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Empress":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Emperor":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Hierophant":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Lovers":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Chariot":
+			Cards.child_Dict[card_name].set_status("white")
+		"Strength":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Hermit":
+			Cards.child_Dict[card_name].set_status("white")
+		"Wheel of Fortune":
+			Cards.child_Dict[card_name].set_status("white")
+		"Justice":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Hanged Man":
+			Cards.child_Dict[card_name].set_status("white")
+		"Death":
+			Cards.child_Dict[card_name].set_status("white")
+		"Temperance":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Devil":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Tower":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Star":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Moon":
+			Cards.child_Dict[card_name].set_status("white")
+		"The Sun":
+			pass
 		"Judgement":
-			effect_Card_Discard(1)
-			Cards.card_Highlight(card_name)
+			effect_Card_Discard(card_name, 2)
+			#Cards.card_Highlight(card_name)
 		"The World":
 			effect_Sefirah_Learn(sefirahCurrent)
 			player.health += 1
+			#Cards.child_Dict[card_name].set_status("white")
+			
 			
 			
 
-func effect_Card_Discard(amount, random = false):
-	for discard in amount:
-		pass
+func effect_Card_Discard(caller, amount = 0,random = true):
+	if !amount:
+		for card in Cards.cards_On_Hand():
+			Cards.child_Dict[card].set_status("white")
+	else:
+		if random:
+			for card_count in amount:
+				#for card in Cards.cards_On_Hand():
+				Cards.cards_On_Hand()[Cards.card_Random(Cards.cards_On_Hand())].set_status("white")
+					#print(Cards.card_Random(Cards.child_Dict))
 
 func effect_Sefirah_Learn(sefirah):
 	sefirah_Learned[sefirahCurrent] += 1

@@ -29,33 +29,38 @@ func highlight(on = true):
 	else:
 		rect_scale = Vector2(1, 1)
 
-func card_update(card_Status, card):
+#эмиттер - Sephirot (Tree)
+func card_update(card):
 	if name == card:
-		if card_Status:
-			color(Color.green)
-		is_Collected = card_Status
+			set_status("green")
 
-func set_status(color):
-	match color:
-		"green":
-			Color.green
-			self.add_color_override("font_color", green)
-		"yellow":
-			Color.yellow
-		"red":
-			Color.red
-	
+func set_status(status):
+	match status:
+		"white": #карта не собрана
+			is_Collected = false
+			_set_color(Color.white)
+		"green": #карта собрана
+			is_Collected = true
+			_set_color(Color.green)
+		"yellow": #источник эффекта
+			_set_color(Color.yellow)
+		"red": #цель для сброса
+			is_Discarding = true
+			_set_color(Color.red)
+
+func _set_color(color: Color):
+	self.add_color_override("font_color", color)
 
 func _on_Card_Instance_gui_input(event):
 	if event is InputEventMouseButton && event.is_pressed():
 		if is_Collected:
 			if is_Discarding:
-				is_Collected = false
+				set_status("white")
 			else:
 				print(name + " used")
+				set_status("white")
 				effect(name)
 
-func effect(arcane_Name):
+func effect(card_Name):
 	#emit_signal("use_Card", arcane_Name)
-	Sefirot.card_Effect(arcane_Name)
-	is_Collected = false
+	Sefirot.card_Effect(card_Name)
