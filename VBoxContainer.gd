@@ -4,30 +4,39 @@ onready var Sefirot = $"../../Sefirot"
 
 onready var card_instance = preload("res://Card_Instance.tscn")
 
+var child_Ref = []
+
 var child_Dict = {}
 
 # не используется
 var number = 0
 
 func _ready():
-	Sefirot.connect("card_Update", self, "card_update")
+	#Sefirot.connect("card_Update", self, "card_update")
 	for arcane in (Sefirot.arcaneActive.keys()):
 		var s = card_instance.instance()
 		s.name = arcane
 		s.text = Sefirot.ARCANETRANSLATION[arcane]
 		s.hint_tooltip = Sefirot.ARCANEDESCRIPTION[arcane]
-		print(s.hint_tooltip)
-		print(s.name)
+		#print(s.hint_tooltip)
+		#print(s.name)
 		child_Dict[arcane] = s
 		add_child(s)
 		number +=1
+		child_Ref.append(s)
 	#print(child_Dict)
 	#print(get_child_count())
 
-func card_update(card_Status, card):
-	if card_Status:
-		var c = child_Dict[card]
-		c.cc()
+func card_Discard(card_Name):
+	var card = child_Dict[card_Name]
+	card.is_Collected = false
+
+func card_Highlight(exception = null):
+	for card in child_Ref:
+				if card.is_Collected:
+					card.color(Color.red)
+					if card.get_name() == exception:
+						card.color(Color.yellow)
 
 # не используется
 func printRoman(number):

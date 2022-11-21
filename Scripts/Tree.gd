@@ -1,7 +1,10 @@
 extends Node2D
 
+signal card_Update
+
 onready var player = $"../Player"
 onready var playerPos = $Malkhut
+onready var Cards = $"../HUD/VBoxContainer"
 
 var fighting = false
 
@@ -13,9 +16,23 @@ var targetName
 
 var lines = []
 
+var Sefirah_Reference = {}
+
 var Sefirah_Position = {}
 
-signal card_Update
+var sefirah_Learned = {
+	"Daath": 0,
+	"Kether": 0,
+	"Hokmah": 0,
+	"Binah": 0,
+	"Hesed": 0,
+	"Gevurah": 0,
+	"Tiferet": 0,
+	"Netzah": 0,
+	"Hod": 0,
+	"Yesod": 0,
+	"Malkhut": 0
+	}
 
 const CHANNELS = {
 	"Daath": [],
@@ -29,22 +46,7 @@ const CHANNELS = {
 	"Hod": ["Gevurah", "Tiferet", "Netzah", "Yesod", "Malkhut"],
 	"Yesod": ["Tiferet", "Netzah", "Hod", "Malkhut"],
 	"Malkhut": ["Netzah", "Hod", "Yesod"]
-}
-
-#не используется
-const CHANNELS_old = {
-	"Daath": [],
-	"Kether": ["Kether", "Hokmah", "Binah", "Tiferet"],
-	"Hokmah": ["Kether", "Hokmah", "Binah", "Hesed", "Tiferet"],
-	"Binah": ["Kether", "Hokmah", "Binah", "Gevurah", "Tiferet"],
-	"Hesed": ["Hokmah", "Hesed", "Gevurah", "Tiferet", "Netzah"],
-	"Gevurah": ["Binah", "Hesed", "Gevurah", "Tiferet", "Hod"],
-	"Tiferet": ["Kether", "Hokmah", "Binah", "Hesed", "Gevurah", "Tiferet", "Netzah", "Hod", "Yesod"],
-	"Netzah": ["Hesed", "Tiferet", "Netzah", "Hod", "Yesod", "Malkhut"],
-	"Hod": ["Gevurah", "Tiferet", "Netzah", "Hod", "Yesod", "Malkhut"],
-	"Yesod": ["Tiferet", "Netzah", "Hod", "Yesod", "Malkhut"],
-	"Malkhut": ["Netzah", "Hod", "Yesod", "Malkhut"]
-}
+	}
 
 const ARCANE_POS = {
 	"The Fool": ["Kether", "Hokmah"],
@@ -69,7 +71,7 @@ const ARCANE_POS = {
 	"The Sun": ["Hod", "Yesod"],
 	"Judgement": ["Hod", "Malkhut"],
 	"The World": ["Yesod", "Malkhut"]
-}
+	}
 
 var arcaneActive = {
 	"The Fool": false,
@@ -145,7 +147,7 @@ const ARCANETRANSLATION = {
 	"Judgement": "Cуд",
 	"The World": "Мир"
 	}
-	
+
 func _ready():
 	get_Sefirah_Position()
 	#print(Sefirah_Position)
@@ -184,14 +186,16 @@ func playerMove(pos):
 
 func get_Sefirah_Position():
 	for sefirah in get_children():
-		Sefirah_Position[sefirah.get_name()] = sefirah.global_position
+		var sefirah_Name = sefirah.get_name()
+		Sefirah_Reference[sefirah_Name] = sefirah
+		Sefirah_Position[sefirah_Name] = sefirah.global_position
 
 func arcaneGet(sefirahLast, sefirahCurrent):
 	for card in ARCANE_POS:
 		if ARCANE_POS[card].has(sefirahLast) && ARCANE_POS[card].has(sefirahCurrent):
 			arcaneActive[card] = true
 			emit_signal("card_Update", arcaneActive[card], card)
-			print(card)
+			print(card + " collected")
 
 func _draw():
 	draw_Channels()
@@ -204,3 +208,24 @@ func draw_Channels():
 		else:
 			draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], 
 			Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.red, 2)
+
+# действия карт
+func card_Effect(card_name):
+	match card_name:
+		"Judgement":
+			effect_Card_Discard(1)
+			Cards.card_Highlight(card_name)
+		"The World":
+			effect_Sefirah_Learn(sefirahCurrent)
+			player.health += 1
+			
+			
+
+func effect_Card_Discard(amount, random = false):
+	for discard in amount:
+		pass
+
+func effect_Sefirah_Learn(sefirah):
+	sefirah_Learned[sefirahCurrent] += 1
+	Sefirah_Reference[sefirahCurrent].modulate = Color.white
+	print(sefirahCurrent + " learned")
