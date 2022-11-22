@@ -4,7 +4,7 @@ onready var Sefirot = $"../../Sefirot"
 
 onready var card_Instance = load("res://Scenes/Card.tscn")
 
-var child_Dict = {}
+var cards = {}
 
 var last_Card_Used: String
 
@@ -20,24 +20,24 @@ func _ready(): #инстанцирует карты внутри себя
 		c.name = card
 		c.text = Sefirot.CARD_TRANSLATION[card]
 		c.hint_tooltip = Sefirot.CARD_DESCRIPTION[card]
-		child_Dict[card] = c
+		cards[card] = c
 		add_child(c)
 		c.connect("is_Discarded", self, "card_Discarded")
 		c.connect("is_Aquired", self, "card_Aquired")
 
 func cards_In(in_Hand = true): #возвращает словарь карт, находящихся в руке, или, на столе
 	var cards_In = {}
-	for card in child_Dict.keys():
+	for card in cards.keys():
 		if in_Hand:
-			if child_Dict[card].is_Collected:
-				cards_In[card] = child_Dict[card]
+			if cards[card].is_Collected:
+				cards_In[card] = cards[card]
 		else:
-			if !child_Dict[card].is_Collected:
-				cards_In[card] = child_Dict[card]
+			if !cards[card].is_Collected:
+				cards_In[card] = cards[card]
 	return cards_In
 
 func card_Discard(card_Name): #срасывает переданную карту
-	var card = child_Dict[card_Name]
+	var card = cards[card_Name]
 	card.is_Collected = false
 
 #сделать модульней
@@ -46,7 +46,7 @@ func card_Discarded(): #считает количество сброшенных
 	if cards_To_Discard == 0:
 		for card in cards_In().values():
 			card.set_status("green")
-		child_Dict[last_Card_Used].set_status("white")
+		cards[last_Card_Used].set_status("white")
 		emit_signal("cards_Effect_Finished")
 
 #сделать модульней
@@ -57,7 +57,7 @@ func card_Aquired(): #считает количество полученных �
 			card.set_status("green")
 		for card in cards_In(false).values():
 			card.set_status("white")
-		child_Dict[last_Card_Used].set_status("white")
+		cards[last_Card_Used].set_status("white")
 		emit_signal("cards_Effect_Finished")
 
 func card_Random(dictionary: Dictionary): #возвращает случайную карту из переданного словаря

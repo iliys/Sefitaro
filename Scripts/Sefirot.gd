@@ -130,7 +130,7 @@ func _draw(): #функция для работы с рисунками
 
 func _draw_Channels(): #рисует и обновляет линии
 	for channel in CARD_POS:
-		if Cards.child_Dict[channel].is_Collected:
+		if Cards.cards[channel].is_Collected:
 			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
 			Sefirah_Position[CARD_POS.get(channel)[1]], Color.green, 3) 
 		else:
@@ -235,7 +235,7 @@ func card_Effect(card_name): #разыгрывает эффект передан
 func _effect_Card_Discard(caller, amount = 0,random = true):
 	if !amount:
 		for card in Cards.cards_In():
-			Cards.child_Dict[card].set_status("white")
+			Cards.cards[card].set_status("white")
 	else:
 		if random:
 			for card_count in amount:
@@ -243,15 +243,15 @@ func _effect_Card_Discard(caller, amount = 0,random = true):
 		else:
 			Cards.cards_To_Discard = amount
 			for card in Cards.cards_In():
-				Cards.child_Dict[card].set_status("red")
+				Cards.cards[card].set_status("red")
 			for card in Cards.cards_In(false):
-				Cards.child_Dict[card].set_status("gray")
-			Cards.child_Dict[caller].set_status("yellow")
+				Cards.cards[card].set_status("gray")
+			Cards.cards[caller].set_status("yellow")
 
 func _effect_Card_Aquire(caller, amount = 0,random = true):
 	if !amount:
 		for card in Cards.cards_In(false):
-			Cards.child_Dict[card].set_status("green")
+			Cards.cards[card].set_status("green")
 	else:
 		if random:
 			for card_count in amount:
@@ -259,10 +259,10 @@ func _effect_Card_Aquire(caller, amount = 0,random = true):
 		else:
 			Cards.cards_To_Aquire = amount
 			for card in Cards.cards_In(false):
-				Cards.child_Dict[card].set_status("palegreen")
+				Cards.cards[card].set_status("palegreen")
 			for card in Cards.cards_In():
-				Cards.child_Dict[card].set_status("gray")
-			Cards.child_Dict[caller].set_status("yellow")
+				Cards.cards[card].set_status("gray")
+			Cards.cards[caller].set_status("yellow")
 
 func _effect_Sefirah_Learn(): #изучает сефиру
 	sefirah_Learned[sefirahCurrent] += 1
