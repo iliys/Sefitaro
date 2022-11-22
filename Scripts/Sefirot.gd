@@ -4,17 +4,13 @@ signal card_Update
 
 onready var player = $"../Player"
 onready var playerPos = $Malkhut
-onready var Cards = $"../HUD/CardContainer"
-
-var fighting = false
+onready var Cards = $"../HUD/Cards"
 
 var sefirahCurrent = "Malkhut"
 var sefirahLast
 
 var mouseTarget
 var targetName
-
-var lines = []
 
 var Sefirah_Reference = {}
 
@@ -48,7 +44,7 @@ const CHANNELS = {
 	"Malkhut": ["Netzah", "Hod", "Yesod"]
 	}
 
-const ARCANE_POS = {
+const CARD_POS = {
 	"The Fool": ["Kether", "Hokmah"],
 	"The Magician": ["Kether", "Binah"],
 	"The High Priestess": ["Kether", "Tiferet"],
@@ -73,32 +69,7 @@ const ARCANE_POS = {
 	"The World": ["Yesod", "Malkhut"]
 	}
 
-var arcaneActive = {
-	"The Fool": false,
-	"The Magician": false,
-	"The High Priestess": false,
-	"The Empress": false,
-	"The Emperor": false,
-	"The Hierophant": false,
-	"The Lovers": false,
-	"The Chariot": false,
-	"Strength": false,
-	"The Hermit": false,
-	"Wheel of Fortune": false,
-	"Justice": false,
-	"The Hanged Man": false,
-	"Death": false,
-	"Temperance": false,
-	"The Devil": false,
-	"The Tower": false,
-	"The Star": false,
-	"The Moon": false,
-	"The Sun": false,
-	"Judgement": false,
-	"The World": false
-	}
-
-const ARCANE_DESCRIPTION = {
+const CARD_DESCRIPTION = {
 	"The Fool": "Перемещает в Малькут и изучает его",
 	"The Magician": "Дает любую карту, изучает примыкающие к ней сефирот",
 	"The High Priestess": "Восстанавливает 2 силы. Даёт случайную карту из трех",
@@ -123,7 +94,7 @@ const ARCANE_DESCRIPTION = {
 	"The World": "Изучает сефиру N раз, где N - число карт на руке, которые пропадают. Восстанавливает все силы"
 	}
 
-const ARCANE_TRANSLATION = {
+const CARD_TRANSLATION = {
 	"The Fool": "Дур",
 	"The Magician": "Маг",
 	"The High Priestess": "Жрица",
@@ -149,169 +120,151 @@ const ARCANE_TRANSLATION = {
 	}
 
 func _ready():
-	get_Sefirah_Position()
-	#print(Sefirah_Position)
+	get_Sefirah_Position() #получает координаты сефир
 
-func _process(delta):
-	update()
+func _process(_delta):
+	update() #обновляет рисунок. Предполагаемая причина асинхронного ввода с мыши
 
-#вызывается из сефир
-func on_Mouse_Target(target):
+func _draw(): #функция для работы с рисунками
+	_draw_Channels()
+
+func _draw_Channels(): #рисует и обновляет линии
+	for channel in CARD_POS:
+		if Cards.child_Dict[channel].is_Collected:
+			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
+			Sefirah_Position[CARD_POS.get(channel)[1]], Color.green, 3) 
+		else:
+			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
+			Sefirah_Position[CARD_POS.get(channel)[1]], Color.red, 2)
+
+func on_Mouse_Target(target): #вызывается из сефир. Назначает целевую сефиру
 	targetName = target.get_name()
 	if CHANNELS.get(sefirahCurrent).has(targetName):
 		mouseTarget = targetName
 		highlight(target)
 
-func on_Mouse_Target_out(target):
+func on_Mouse_Target_out(target): #вызывается из сефир. Удаляет значение целевой сефиры
 	mouseTarget = null
 	highlight(target, false)
 
-func highlight(target, on = true):
+func highlight(target, on = true): #подсвечивает целевую сефиру
 	if on:
 		target.scale = Vector2( 1.3, 1.3 )
 	else:
-		target.scale = Vector2( 1, 1 )
+		target.scale = Vector2.ONE
 
-func _input(event):
+func _input(event): #перемещение на целевую сефиру по нажатию мыши
 	if event is InputEventMouseButton && event.is_pressed():
-		if !fighting && mouseTarget:
-			changePos(mouseTarget)
+		if mouseTarget:
+			_changePos(mouseTarget)
 
-func changePos(pos):
+func _changePos(pos): #перемещение на целевую сефиру, вызывает подбор карты 
 	sefirahLast = sefirahCurrent
 	sefirahCurrent = mouseTarget
-	playerMove(pos)
-	arcaneGet(sefirahLast, sefirahCurrent)
-	#print(sefirahLast)
-	#print(sefirahCurrent)
+	_playerMove(pos)
+	_card_Get(sefirahLast, sefirahCurrent)
 
-func playerMove(pos):
+func _playerMove(pos):  #перемещает игрока на целевую сефиру, отнимает усердие 
 	player.position = Sefirah_Position.get(pos)
 	playerPos = pos
 	player.health -= 1
 
-func get_Sefirah_Position():
+func get_Sefirah_Position(): #получает координаты сефир
 	for sefirah in get_children():
 		var sefirah_Name = sefirah.get_name()
 		Sefirah_Reference[sefirah_Name] = sefirah
 		Sefirah_Position[sefirah_Name] = sefirah.global_position
 
-func arcaneGet(sefirahLast, sefirahCurrent): #получаем карту в инвентарь
-	for card in ARCANE_POS:
-		if ARCANE_POS[card].has(sefirahLast) && ARCANE_POS[card].has(sefirahCurrent):
-			#arcaneActive[card] = true
-			#принимает - Arcane (карты)
+func _card_Get(_sefirahLast, _sefirahCurrent): #добавляет полученную после перемещения карту в инвентарь
+	for card in CARD_POS:
+		if CARD_POS[card].has(sefirahLast) && CARD_POS[card].has(sefirahCurrent):
 			emit_signal("card_Update", card)
 			print(card + " collected")
 
-func _draw():
-	draw_Channels()
-
-func draw_Channels():
-	for channel in ARCANE_POS:
-		if Cards.child_Dict[channel].is_Collected:
-			draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], 
-			Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.green, 3) 
-		else:
-			draw_line(Sefirah_Position[ARCANE_POS.get(channel)[0]], 
-			Sefirah_Position[ARCANE_POS.get(channel)[1]], Color.red, 2)
-
-# действия карт
-func card_Effect(card_name):
+func card_Effect(card_name): #разыгрывает эффект переданной карты
 	Cards.last_Card_Used = card_name
 	match card_name:
 		"The Fool":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Magician":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The High Priestess":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Empress":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Emperor":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Hierophant":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Lovers":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Chariot":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"Strength":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Hermit":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"Wheel of Fortune":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"Justice":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Hanged Man":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"Death":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"Temperance":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Devil":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Tower":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Star":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Moon":
-			Cards.child_Dict[card_name].set_status("white")
+			pass
 		"The Sun":
 			pass
 		"Judgement":
-			effect_Card_Discard(card_name, 1, false)
+			_effect_Card_Discard(card_name, 1, false)
 			yield(Cards, "cards_Effect_Finished")
-			effect_Card_Aqquire(card_name, 1, false)
+			_effect_Card_Aquire(card_name, 1, false)
 		"The World":
-			effect_Sefirah_Learn(sefirahCurrent)
+			_effect_Sefirah_Learn()
 			player.health += 1
-			#Cards.child_Dict[card_name].set_status("white")
 
-
-
-func effect_Card_Discard(caller, amount = 0,random = true):
+func _effect_Card_Discard(caller, amount = 0,random = true):
 	if !amount:
 		for card in Cards.cards_In():
 			Cards.child_Dict[card].set_status("white")
 	else:
 		if random:
 			for card_count in amount:
-				#for card in Cards.cards_On_Hand():
 				Cards.cards_In()[Cards.card_Random(Cards.cards_In())].set_status("white")
-					#print(Cards.card_Random(Cards.child_Dict))
 		else:
 			Cards.cards_To_Discard = amount
 			for card in Cards.cards_In():
-				#эмиттер - карта
-				#card.connect("is_Discarded", self, "is_Discarded"
 				Cards.child_Dict[card].set_status("red")
-			for card in Cards.cards_In(false):	
+			for card in Cards.cards_In(false):
 				Cards.child_Dict[card].set_status("gray")
 			Cards.child_Dict[caller].set_status("yellow")
 
-func effect_Card_Aqquire(caller, amount = 0,random = true):
+func _effect_Card_Aquire(caller, amount = 0,random = true):
 	if !amount:
 		for card in Cards.cards_In(false):
 			Cards.child_Dict[card].set_status("green")
 	else:
 		if random:
 			for card_count in amount:
-				#for card in Cards.cards_On_Hand():
 				Cards.cards_In(false)[Cards.card_Random(Cards.cards_In(false))].set_status("green")
-					#print(Cards.card_Random(Cards.child_Dict))
 		else:
-			Cards.cards_To_Aqquire = amount
+			Cards.cards_To_Aquire = amount
 			for card in Cards.cards_In(false):
-				#эмиттер - карта
-				#card.connect("is_Discarded", self, "is_Discarded"
 				Cards.child_Dict[card].set_status("palegreen")
 			for card in Cards.cards_In():
 				Cards.child_Dict[card].set_status("gray")
 			Cards.child_Dict[caller].set_status("yellow")
 
-func effect_Sefirah_Learn(sefirah):
+func _effect_Sefirah_Learn(): #изучает сефиру
 	sefirah_Learned[sefirahCurrent] += 1
 	Sefirah_Reference[sefirahCurrent].modulate = Color.white
 	print(sefirahCurrent + " learned")
