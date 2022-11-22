@@ -261,29 +261,51 @@ func card_Effect(card_name):
 		"The Sun":
 			pass
 		"Judgement":
-			effect_Card_Discard(card_name, 1, false)
-			#Cards.card_Highlight(card_name)
+			#effect_Card_Discard(card_name, 1, false)
+			effect_Card_Aqquire(card_name, 1, false)
 		"The World":
 			effect_Sefirah_Learn(sefirahCurrent)
 			player.health += 1
 			#Cards.child_Dict[card_name].set_status("white")
 
+
+
 func effect_Card_Discard(caller, amount = 0,random = true):
 	if !amount:
-		for card in Cards.cards_On_Hand():
+		for card in Cards.cards_In():
 			Cards.child_Dict[card].set_status("white")
 	else:
 		if random:
 			for card_count in amount:
 				#for card in Cards.cards_On_Hand():
-				Cards.cards_On_Hand()[Cards.card_Random(Cards.cards_On_Hand())].set_status("white")
+				Cards.cards_In()[Cards.card_Random(Cards.cards_In())].set_status("white")
 					#print(Cards.card_Random(Cards.child_Dict))
 		else:
 			Cards.cards_To_Discard = amount
-			for card in Cards.cards_On_Hand():
+			for card in Cards.cards_In():
 				#эмиттер - карта
 				#card.connect("is_Discarded", self, "is_Discarded"
 				Cards.child_Dict[card].set_status("red")
+			Cards.child_Dict[caller].set_status("yellow")
+
+func effect_Card_Aqquire(caller, amount = 0,random = true):
+	if !amount:
+		for card in Cards.cards_In(false):
+			Cards.child_Dict[card].set_status("green")
+	else:
+		if random:
+			for card_count in amount:
+				#for card in Cards.cards_On_Hand():
+				Cards.cards_In(false)[Cards.card_Random(Cards.cards_In(false))].set_status("green")
+					#print(Cards.card_Random(Cards.child_Dict))
+		else:
+			Cards.cards_To_Aqquire = amount
+			for card in Cards.cards_In(false):
+				#эмиттер - карта
+				#card.connect("is_Discarded", self, "is_Discarded"
+				Cards.child_Dict[card].set_status("palegreen")
+			for card in Cards.cards_In():
+				Cards.child_Dict[card].set_status("gray")
 			Cards.child_Dict[caller].set_status("yellow")
 
 func effect_Sefirah_Learn(sefirah):

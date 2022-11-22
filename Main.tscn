@@ -41,8 +41,9 @@ color = Color( 0, 0, 0, 1 )
 script = ExtResource( 1 )
 
 [node name="Daath" type="Area2D" parent="Sefirot" groups=["node"]]
+visible = false
 modulate = Color( 0.431373, 0.431373, 0.431373, 1 )
-position = Vector2( 506, 198 )
+position = Vector2( 485, 216 )
 script = ExtResource( 13 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sefirot/Daath"]

@@ -11,8 +11,11 @@ var child_Dict = {}
 
 var last_Card_Used: String
 
-var cards_Discarded = []
+#var cards_Discarded = []
 var cards_To_Discard: int = 0
+
+#var cards_Aqquired = []
+var cards_To_Aqquire: int = 0
 
 # не используется
 var number = 0
@@ -27,25 +30,45 @@ func _ready():
 		add_child(c)
 		number +=1
 		child_Ref.append(c)
+		#подключает каждую карту
 		c.connect("is_Discarded", self, "card_Discarded")
-func cards_On_Hand():
-	var hand = {}
+		c.connect("is_Aqquired", self, "card_Aqquired")
+
+#словарь карт в руке, или на столе
+func cards_In(in_Hand = true):
+	var cards_In = {}
 	for card in child_Dict.keys():
-		if child_Dict[card].is_Collected:
-			hand[card] = child_Dict[card]
-	return hand
+		if in_Hand:
+			if child_Dict[card].is_Collected:
+				cards_In[card] = child_Dict[card]
+		else:
+			if !child_Dict[card].is_Collected:
+				cards_In[card] = child_Dict[card]
+	return cards_In
 
 func card_Discard(card_Name):
 	var card = child_Dict[card_Name]
 	card.is_Collected = false
 
+#сделать модульней
 func card_Discarded(card_Name):
-	cards_Discarded.clear()
-	cards_Discarded.append(card_Name)
+	#cards_Discarded.clear()
+	#cards_Discarded.append(card_Name)
 	cards_To_Discard -= 1
 	if cards_To_Discard == 0:
-		for card in cards_On_Hand().values():
+		for card in cards_In().values():
 			card.set_status("green")
+		child_Dict[last_Card_Used].set_status("white")
+
+func card_Aqquired(card_Name):
+	#cards_Aqquired.clear()
+	#cards_Aqquired.append(card_Name)
+	cards_To_Aqquire -= 1
+	if cards_To_Aqquire == 0:
+		for card in cards_In().values():
+			card.set_status("green")
+		for card in cards_In(false).values():
+			card.set_status("white")
 		child_Dict[last_Card_Used].set_status("white")
 
 # на удаление
@@ -59,17 +82,3 @@ func card_Highlight(except = null):
 func card_Random(dictionary: Dictionary):
 	randomize()
 	return dictionary.keys()[randi() % dictionary.size()]
-	
-	# не используется
-func printRoman(number):
-	var res = []
-	var num = [1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000]
-	var sym = ["I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"]
-	var i = 12
-	while number:
-		var div = floor(number / num[i])
-		number %= num[i]
-		while div:
-			res.append(sym[i])
-			div -= 1
-		i -= 1
