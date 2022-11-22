@@ -51,14 +51,14 @@ func set_status(status):
 				is_Collected = true
 				_set_color(Color.green)
 		"palegreen":
-			_set_color(Color.greenyellow)
+			_set_color(Color.aquamarine)
 			is_Aqquiring = true
 		"yellow": #источник эффекта
 			is_Collected = true #мейби false сделать?
 			_set_color(Color.yellow)
 		"red": #цель для сброса
 			is_Discarding = true
-			_set_color(Color.red)
+			_set_color(Color.orangered)
 		"gray": #скрыта
 			_set_color(Color.dimgray)
 	card_Status = status

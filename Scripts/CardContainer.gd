@@ -17,6 +17,8 @@ var cards_To_Discard: int = 0
 #var cards_Aqquired = []
 var cards_To_Aqquire: int = 0
 
+signal cards_Effect_Finished
+
 # не используется
 var number = 0
 
@@ -59,6 +61,7 @@ func card_Discarded(card_Name):
 		for card in cards_In().values():
 			card.set_status("green")
 		child_Dict[last_Card_Used].set_status("white")
+		emit_signal("cards_Effect_Finished")
 
 func card_Aqquired(card_Name):
 	#cards_Aqquired.clear()
@@ -70,6 +73,7 @@ func card_Aqquired(card_Name):
 		for card in cards_In(false).values():
 			card.set_status("white")
 		child_Dict[last_Card_Used].set_status("white")
+		emit_signal("cards_Effect_Finished")
 
 # на удаление
 func card_Highlight(except = null):

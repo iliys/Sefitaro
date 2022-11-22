@@ -261,7 +261,8 @@ func card_Effect(card_name):
 		"The Sun":
 			pass
 		"Judgement":
-			#effect_Card_Discard(card_name, 1, false)
+			effect_Card_Discard(card_name, 1, false)
+			yield(Cards, "cards_Effect_Finished")
 			effect_Card_Aqquire(card_name, 1, false)
 		"The World":
 			effect_Sefirah_Learn(sefirahCurrent)
@@ -286,6 +287,8 @@ func effect_Card_Discard(caller, amount = 0,random = true):
 				#эмиттер - карта
 				#card.connect("is_Discarded", self, "is_Discarded"
 				Cards.child_Dict[card].set_status("red")
+			for card in Cards.cards_In(false):	
+				Cards.child_Dict[card].set_status("gray")
 			Cards.child_Dict[caller].set_status("yellow")
 
 func effect_Card_Aqquire(caller, amount = 0,random = true):
@@ -312,3 +315,6 @@ func effect_Sefirah_Learn(sefirah):
 	sefirah_Learned[sefirahCurrent] += 1
 	Sefirah_Reference[sefirahCurrent].modulate = Color.white
 	print(sefirahCurrent + " learned")
+
+#component functions
+
