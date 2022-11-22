@@ -98,7 +98,7 @@ var arcaneActive = {
 	"The World": false
 	}
 
-const ARCANEDESCRIPTION = {
+const ARCANE_DESCRIPTION = {
 	"The Fool": "Перемещает в Малькут и изучает его",
 	"The Magician": "Дает любую карту, изучает примыкающие к ней сефирот",
 	"The High Priestess": "Восстанавливает 2 силы. Даёт случайную карту из трех",
@@ -123,7 +123,7 @@ const ARCANEDESCRIPTION = {
 	"The World": "Изучает сефиру N раз, где N - число карт на руке, которые пропадают. Восстанавливает все силы"
 	}
 
-const ARCANETRANSLATION = {
+const ARCANE_TRANSLATION = {
 	"The Fool": "Дур",
 	"The Magician": "Маг",
 	"The High Priestess": "Жрица",
@@ -218,6 +218,7 @@ func draw_Channels():
 
 # действия карт
 func card_Effect(card_name):
+	Cards.last_Card_Used = card_name
 	match card_name:
 		"The Fool":
 			Cards.child_Dict[card_name].set_status("white")
@@ -260,15 +261,12 @@ func card_Effect(card_name):
 		"The Sun":
 			pass
 		"Judgement":
-			effect_Card_Discard(card_name, 2)
+			effect_Card_Discard(card_name, 1, false)
 			#Cards.card_Highlight(card_name)
 		"The World":
 			effect_Sefirah_Learn(sefirahCurrent)
 			player.health += 1
 			#Cards.child_Dict[card_name].set_status("white")
-			
-			
-			
 
 func effect_Card_Discard(caller, amount = 0,random = true):
 	if !amount:
@@ -280,6 +278,13 @@ func effect_Card_Discard(caller, amount = 0,random = true):
 				#for card in Cards.cards_On_Hand():
 				Cards.cards_On_Hand()[Cards.card_Random(Cards.cards_On_Hand())].set_status("white")
 					#print(Cards.card_Random(Cards.child_Dict))
+		else:
+			Cards.cards_To_Discard = amount
+			for card in Cards.cards_On_Hand():
+				#эмиттер - карта
+				#card.connect("is_Discarded", self, "is_Discarded"
+				Cards.child_Dict[card].set_status("red")
+			Cards.child_Dict[caller].set_status("yellow")
 
 func effect_Sefirah_Learn(sefirah):
 	sefirah_Learned[sefirahCurrent] += 1

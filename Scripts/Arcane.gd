@@ -4,10 +4,12 @@ extends Label
 
 onready var Sefirot = $"../../../Sefirot"
 
-var  is_Collected: bool = false
+var is_Collected: bool = false
+
+var card_Status: String = "white"
 
 var is_Discarding: bool = false
-#signal is_Discarded
+signal is_Discarded
 
 var pos = []
 
@@ -40,13 +42,18 @@ func set_status(status):
 			is_Collected = false
 			_set_color(Color.white)
 		"green": #карта собрана
-			is_Collected = true
-			_set_color(Color.green)
+			#if card_Status == "yellow":
+				#is_Collected = false
+			#else:
+				is_Collected = true
+				_set_color(Color.green)
 		"yellow": #источник эффекта
+			is_Collected = true
 			_set_color(Color.yellow)
 		"red": #цель для сброса
 			is_Discarding = true
 			_set_color(Color.red)
+	card_Status = status
 
 func _set_color(color: Color):
 	self.add_color_override("font_color", color)
@@ -55,7 +62,12 @@ func _on_Card_Instance_gui_input(event):
 	if event is InputEventMouseButton && event.is_pressed():
 		if is_Collected:
 			if is_Discarding:
+				print(name + " discarded")
 				set_status("white")
+				emit_signal("is_Discarded", self)
+				#принимает - Sefirot.effect_Card_Discard()
+				#emit_signal("is_Discarded", self)
+				
 			else:
 				print(name + " used")
 				set_status("white")

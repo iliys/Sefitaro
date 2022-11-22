@@ -2,33 +2,32 @@ extends VBoxContainer
 
 onready var Sefirot = $"../../Sefirot"
 
-onready var card_instance = preload("res://Card_Instance.tscn")
+onready var card_Instance = preload("res://Card_Instance.tscn")
 
 # не используется
 var child_Ref = []
 
 var child_Dict = {}
 
+var last_Card_Used: String
+
+var cards_Discarded = []
+var cards_To_Discard: int = 0
+
 # не используется
 var number = 0
 
 func _ready():
-	#Sefirot.connect("card_Update", self, "card_update")
-	for card in (Sefirot.arcaneActive.keys()):
-		var s = card_instance.instance()
-		s.name = card
-		s.text = Sefirot.ARCANETRANSLATION[card]
-		s.hint_tooltip = Sefirot.ARCANEDESCRIPTION[card]
-		#print(s.hint_tooltip)
-		#print(s.name)
-		child_Dict[card] = s
-		add_child(s)
+	for card in (Sefirot.ARCANE_POS.keys()):
+		var c = card_Instance.instance()
+		c.name = card
+		c.text = Sefirot.ARCANE_TRANSLATION[card]
+		c.hint_tooltip = Sefirot.ARCANE_DESCRIPTION[card]
+		child_Dict[card] = c
+		add_child(c)
 		number +=1
-		child_Ref.append(s)
-	#print(child_Dict)
-	#print(child_Ref[0])
-	#print(get_child_count())
-	#print(card_Random())
+		child_Ref.append(c)
+		c.connect("is_Discarded", self, "card_Discarded")
 func cards_On_Hand():
 	var hand = {}
 	for card in child_Dict.keys():
@@ -39,6 +38,15 @@ func cards_On_Hand():
 func card_Discard(card_Name):
 	var card = child_Dict[card_Name]
 	card.is_Collected = false
+
+func card_Discarded(card_Name):
+	cards_Discarded.clear()
+	cards_Discarded.append(card_Name)
+	cards_To_Discard -= 1
+	if cards_To_Discard == 0:
+		for card in cards_On_Hand().values():
+			card.set_status("green")
+		child_Dict[last_Card_Used].set_status("white")
 
 # на удаление
 func card_Highlight(except = null):
