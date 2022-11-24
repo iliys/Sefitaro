@@ -1,6 +1,8 @@
 extends VBoxContainer
 
-signal completed
+signal iteration_Completed
+signal next_Effect
+signal next_Effect_Start
 
 onready var card_Instance = load("res://Scenes/Card.tscn")
 
@@ -8,6 +10,7 @@ onready var Sefirot = $"../../Sefirot"
 onready var Player = $"../../Player"
 
 var cards = {}
+var card_Temp: String
 
 var card_List_Collected = []
 var card_List_Not_Collected = []
@@ -70,8 +73,9 @@ func play_Card_Effect(card_name): #разыгрывает эффект пере�
 		"The Sun":
 			pass
 		"Judgement":
-			_effect_Card_Discard_Selection(card_name, _list_Cards_Collected(), 1)
-			#_effect_Card_Collect_Selection(_list_Cards_Not_Collected(), 1)
+			_effect_Card_Discard_Selection(card_name, 1)
+			yield(self, "next_Effect")
+			_effect_Card_Collect_Selection(card_name, 1)
 		"The World":
 			_effect_Sefirah_Learn()
 			_effect_HP_Restore()
@@ -79,10 +83,13 @@ func play_Card_Effect(card_name): #разыгрывает эффект пере�
 #эффекты карт
 
 func effect_Continue():
-	counter -= 1
-	for card_Index in _list_Cards_Collected():
+	for card_Index in cards:
 		cards[card_Index].deselect()
-	emit_signal("completed")
+	counter -= 1
+	if counter == 0:
+		emit_signal("next_Effect")
+	emit_signal("iteration_Completed")
+
 
 
 
@@ -106,11 +113,14 @@ func _effect_Card_Collect(card_Name: Array): #получает карты из �
 	for card in cards[card_Name]:
 		card.collect()
 
-func _effect_Card_Collect_Selection(array: Array, amount: int): #подсвечивает карты для получения из переданного списка
+func _effect_Card_Collect_Selection(card_Name: String, amount: int): #подсвечивает карты для получения из переданного списка
+	counter = amount
 	for x in range(amount):
-		for card_Index in array:
+		cards[card_Name].set_Status("yellow")
+		cards[card_Temp].set_Status("gray")
+		for card_Index in cards:
 			cards[card_Index].collect_Selection()
-		yield(effect_Continue(), "completed")
+		yield(self, "iteration_Completed")
 
 
 
@@ -118,13 +128,13 @@ func _effect_Card_Discard(card_Name: Array): #сбрасывает карты и
 	for card in cards[card_Name]:
 		card.discard()
 
-func _effect_Card_Discard_Selection(card_Name: String, array: Array, amount: int): #подсвечивает карты для сброса из переданного списка
-	counter = amount+1
+func _effect_Card_Discard_Selection(card_Name: String, amount: int): #подсвечивает карты для сброса из переданного списка
+	counter = amount
 	for x in range(amount):
 		cards[card_Name].set_Status("yellow")
-		for card_Index in _list_Cards_Collected():
+		for card_Index in cards:
 			cards[card_Index].discard_Selection()
-		yield(self, "completed")
+		yield(self, "iteration_Completed")
 
 
 func _get_Random(dictionary: Dictionary): #возвращает случайную карту из переданного словаря

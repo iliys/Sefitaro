@@ -5,6 +5,7 @@ signal effect_Continue
 onready var Cards = get_parent()
 
 var _status: String
+var _previous_Status: String
 
 var description: String
 
@@ -45,8 +46,8 @@ func set_Status(status): #устанавливает переданный ста
 			is_Collected = true
 			_set_Color(Color.orangered)
 		"gray": #не активна
-			is_Collected = true
 			_set_Color(Color.dimgray)
+	_previous_Status = _status
 	_status = status
 
 func _on_Card_Instance_gui_input(event): #активирует карты по нажатию мыши с учетом их статуса
@@ -76,25 +77,33 @@ func _Play_Card_Effect(): #разыгрывает эффект переданн�
 func collect(): #собирает карту
 	set_Status("green")
 	print(name + " collected")
+	if Cards.counter != 0:
+		emit_signal("effect_Continue")
 
 func collect_Selection(): #подсвечивает карту для получения
-	set_Status("palegreen")
+	if _status == "white":
+		set_Status("palegreen")
+	if _status == "green":
+		set_Status("gray")
 	#print(name + " able to aquire")
 
 func discard(): #сбрасывает карту
 	set_Status("white")
+	Cards.card_Temp = name
 	print(name + " discarded")
-	if Cards.counter > 0:
+	if Cards.counter != 0:
 		emit_signal("effect_Continue")
 
 func discard_Selection(): #подсвечивает карту для сброса
-	if _status != "yellow":
+	if _status == "green":
 		set_Status("red")
+	if _status == "white":
+		set_Status("gray")
 	#print(name + " is getting discarded")
 
 func deselect():
-	if _status == "yellow" or _status == "palegreen":
-		set_Status("white")
+	if _status == "yellow" or _status == "palegreen" or _status == "gray":
+		set_Status(_previous_Status)
 	if _status == "red":
 		set_Status("green")
 

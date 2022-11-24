@@ -136,10 +136,11 @@ func _draw_Channels(): #рисует и обновляет линии
 			Sefirah_Position[CARD_POS.get(channel)[1]], Color.red, 2)
 
 func on_Mouse_Target(target): #вызывается из сефир. Назначает целевую сефиру
-	targetName = target.get_name()
-	if CHANNELS.get(sefirahCurrent).has(targetName):
-		mouseTarget = targetName
-		highlight(target)
+	if Cards.counter == 0:
+		targetName = target.get_name()
+		if CHANNELS.get(sefirahCurrent).has(targetName):
+			mouseTarget = targetName
+			highlight(target)
 
 func on_Mouse_Target_out(target): #вызывается из сефир. Удаляет значение целевой сефиры
 	mouseTarget = null
