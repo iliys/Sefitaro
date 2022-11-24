@@ -2,8 +2,8 @@ extends Node2D
 
 onready var HP_Score = $"../HUD/HP/HP_Score"
 
-var health = 10 setget _health_set, _health_get
-var health_max = 10
+var health = 3 setget _health_set, _health_get
+var health_max = 3
 
 func _health_set(new_value): #установка здоровья
 	health = new_value 

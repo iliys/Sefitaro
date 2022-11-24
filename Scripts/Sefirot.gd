@@ -1,21 +1,105 @@
 extends Node2D
 
-onready var player = $"../Player"
+signal effect_Continue
+
+onready var Player = $"../Player"
 onready var playerPos = $Malkhut
 onready var Cards = $"../HUD/Cards"
 
-var sefirahCurrent = "Malkhut"
-var sefirahLast
+var sefirah_Current = "Malkhut"
+var sefirah_Last
 
 var mouseTarget
 var targetName
+
+var free_Moves = 0
 
 var Sefirah_Reference = {}
 
 var Sefirah_Position = {}
 
+
+func _ready():
+	connect("effect_Continue", Cards, "_effect_Continue")
+	_get_Sefirah_Position() #получает координаты сефир
+
+func _process(_delta):
+	update() #обновляет рисунок. Предполагаемая причина асинхронного ввода с мыши
+
+func _draw(): #функция для работы с рисунками
+	_draw_Channels()
+
+func _draw_Channels(): #рисует и обновляет линии
+	for channel in CARD_POS:
+		if Cards.cards[channel].is_Collected:
+			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
+			Sefirah_Position[CARD_POS.get(channel)[1]], Color.green, 3) 
+		else:
+			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
+			Sefirah_Position[CARD_POS.get(channel)[1]], Color.red, 2)
+
+func on_Mouse_Target(target): #вызывается из сефир. Назначает целевую сефиру
+	if Cards.counter == 0:
+		targetName = target.get_name()
+		if CHANNELS.get(sefirah_Current).has(targetName):
+			mouseTarget = targetName
+			highlight(target)
+	if free_Moves > 0:
+		mouseTarget = target.get_name()
+		
+
+func on_Mouse_Target_out(target): #вызывается из сефир. Удаляет значение целевой сефиры
+	if free_Moves > 0:
+		return
+	mouseTarget = null
+	highlight(target, false)
+
+func highlight(target, on = true): #подсвечивает целевую сефиру
+	if on:
+		target.scale = Vector2( 1.3, 1.3 )
+	else:
+		target.scale = Vector2.ONE
+
+func _input(event): #перемещение на целевую сефиру по нажатию мыши
+	if event is InputEventMouseButton && event.is_pressed():
+		if mouseTarget:
+			changePos(mouseTarget)
+			if free_Moves > 0:
+				free_Moves -= 1
+				emit_signal("effect_Continue")
+
+func changePos(pos, pick_Up_Cards = true, decrease_Health = true): #перемещение на целевую сефиру, вызывает подбор карты 
+	sefirah_Last = sefirah_Current
+	sefirah_Current = pos
+	_playerMove(pos, decrease_Health)
+	if pick_Up_Cards:
+		_card_Get(sefirah_Last, sefirah_Current)
+
+func _card_Get(sefirah_Last, sefirah_Current): #добавляет полученную после перемещения карту в инвентарь
+	for card in CARD_POS:
+		if CARD_POS[card].has(sefirah_Last) && CARD_POS[card].has(sefirah_Current):
+			Cards.cards[card].collect()
+
+func _playerMove(pos, decrease_Health = true):  #перемещает игрока на целевую сефиру, отнимает усердие 
+	Player.position = Sefirah_Position.get(pos)
+	playerPos = pos
+	if decrease_Health:
+		Player.health -= 1
+
+func _get_Sefirah_Position(): #получает координаты сефир
+	for sefirah in get_children():
+		var sefirah_Name = sefirah.get_name()
+		Sefirah_Reference[sefirah_Name] = sefirah
+		Sefirah_Position[sefirah_Name] = sefirah.global_position
+
+func sefirah_Learn(_sefirah, amount): #изучает переданную сефиру. Вызывается из Cards
+	if amount != 0:
+		sefirah_Learned[_sefirah] += amount
+		Sefirah_Reference[_sefirah].modulate = Color.white
+		print(_sefirah + " learned")
+
 var sefirah_Learned = {
-	"Daath": 0,
+	#"Daath": 0,
 	"Kether": 0,
 	"Hokmah": 0,
 	"Binah": 0,
@@ -29,7 +113,7 @@ var sefirah_Learned = {
 	}
 
 const CHANNELS = {
-	"Daath": [],
+	#"Daath": [],
 	"Kether": ["Hokmah", "Binah", "Tiferet"],
 	"Hokmah": ["Kether", "Binah", "Hesed", "Tiferet"],
 	"Binah": ["Kether", "Hokmah", "Gevurah", "Tiferet"],
@@ -116,70 +200,3 @@ const CARD_TRANSLATION = {
 	"Judgement": "Cуд",
 	"The World": "Мир"
 	}
-
-func _ready():
-	get_Sefirah_Position() #получает координаты сефир
-
-func _process(_delta):
-	update() #обновляет рисунок. Предполагаемая причина асинхронного ввода с мыши
-
-func _draw(): #функция для работы с рисунками
-	_draw_Channels()
-
-func _draw_Channels(): #рисует и обновляет линии
-	for channel in CARD_POS:
-		if Cards.cards[channel].is_Collected:
-			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
-			Sefirah_Position[CARD_POS.get(channel)[1]], Color.green, 3) 
-		else:
-			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
-			Sefirah_Position[CARD_POS.get(channel)[1]], Color.red, 2)
-
-func on_Mouse_Target(target): #вызывается из сефир. Назначает целевую сефиру
-	if Cards.counter == 0:
-		targetName = target.get_name()
-		if CHANNELS.get(sefirahCurrent).has(targetName):
-			mouseTarget = targetName
-			highlight(target)
-
-func on_Mouse_Target_out(target): #вызывается из сефир. Удаляет значение целевой сефиры
-	mouseTarget = null
-	highlight(target, false)
-
-func highlight(target, on = true): #подсвечивает целевую сефиру
-	if on:
-		target.scale = Vector2( 1.3, 1.3 )
-	else:
-		target.scale = Vector2.ONE
-
-func _input(event): #перемещение на целевую сефиру по нажатию мыши
-	if event is InputEventMouseButton && event.is_pressed():
-		if mouseTarget:
-			_changePos(mouseTarget)
-
-func _changePos(pos): #перемещение на целевую сефиру, вызывает подбор карты 
-	sefirahLast = sefirahCurrent
-	sefirahCurrent = mouseTarget
-	_playerMove(pos)
-	_card_Get(sefirahLast, sefirahCurrent)
-
-func _card_Get(_sefirahLast, _sefirahCurrent): #добавляет полученную после перемещения карту в инвентарь
-	for card in CARD_POS:
-		if CARD_POS[card].has(sefirahLast) && CARD_POS[card].has(sefirahCurrent):
-			Cards.cards[card].collect()
-
-func _playerMove(pos):  #перемещает игрока на целевую сефиру, отнимает усердие 
-	player.position = Sefirah_Position.get(pos)
-	playerPos = pos
-	player.health -= 1
-
-func get_Sefirah_Position(): #получает координаты сефир
-	for sefirah in get_children():
-		var sefirah_Name = sefirah.get_name()
-		Sefirah_Reference[sefirah_Name] = sefirah
-		Sefirah_Position[sefirah_Name] = sefirah.global_position
-
-func sefirah_Learn(_sefirah): #изучает переданную сефиру. Вызывается из Cards
-	sefirah_Learned[_sefirah] += 1
-	Sefirah_Reference[_sefirah].modulate = Color.white
-	print(_sefirah + " learned")

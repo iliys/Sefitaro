@@ -4,6 +4,8 @@ signal effect_Continue
 
 onready var Cards = get_parent()
 
+onready var Player = Player
+
 var _status: String
 var _previous_Status: String
 
@@ -13,7 +15,7 @@ var is_Collected: bool
 
 
 func _ready(): #подключает сигнал для обновления состояния карт
-	connect("effect_Continue", Cards, "effect_Continue")
+	connect("effect_Continue", Cards, "_effect_Continue")
 	set_Status("white")
 
 func _on_Card_mouse_entered(): #подсвечивает карту
@@ -77,7 +79,7 @@ func _Play_Card_Effect(): #разыгрывает эффект переданн�
 func collect(): #собирает карту
 	set_Status("green")
 	print(name + " collected")
-	if Cards.counter != 0:
+	if Cards.counter > 0:
 		emit_signal("effect_Continue")
 
 func collect_Selection(): #подсвечивает карту для получения
@@ -91,7 +93,7 @@ func discard(): #сбрасывает карту
 	set_Status("white")
 	Cards.card_Temp = name
 	print(name + " discarded")
-	if Cards.counter != 0:
+	if Cards.counter > 0:
 		emit_signal("effect_Continue")
 
 func discard_Selection(): #подсвечивает карту для сброса

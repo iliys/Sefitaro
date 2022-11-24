@@ -33,45 +33,60 @@ func play_Card_Effect(card_name): #разыгрывает эффект пере�
 	cards[card_name].discard()
 	match card_name:
 		"The Fool":
-			pass
+			Sefirot.changePos("Malkhut", false, false)
+			_effect_Sefirah_Learn()
 		"The Magician":
-			pass
+			_effect_Card_Collect_Selection(card_name, 1)
 		"The High Priestess":
 			pass
 		"The Empress":
 			pass
 		"The Emperor":
-			pass
+			_effect_HP_Restore()
+			_effect_Sefirah_Learn()
+			_effect_Free_Move(1)
 		"The Hierophant":
 			pass
 		"The Lovers":
 			pass
 		"The Chariot":
-			pass
+			_effect_HP_Restore()
+			_effect_Free_Move(1)
+			yield(self, "next_Effect")
+			_effect_Sefirah_Learn()
 		"Strength":
-			pass
+			_effect_Sefirah_Learn()
+			_effect_HP_Restore()
 		"The Hermit":
 			pass
 		"Wheel of Fortune":
-			pass
+			_effect_Card_Collect(_get_Random(cards))
 		"Justice":
-			pass
+			_effect_Sefirah_Learn(Sefirot.sefirah_Current, Sefirot.sefirah_Learned[Sefirot.sefirah_Last])
 		"The Hanged Man":
-			pass
+			Sefirot.changePos(Sefirot.sefirah_Last, false, false)
 		"Death":
-			pass
+			_effect_HP_Restore(999)
+			Sefirot.changePos("Malkhut", false, false)
+			_effect_Card_Discard(cards.keys())
 		"Temperance":
-			pass
+			_effect_Card_Discard_Selection(card_name, 1)
+			yield(self, "next_Effect")
+			_effect_Sefirah_Learn()
 		"The Devil":
-			pass
+			_effect_HP_Restore(1)
+			Sefirot.changePos(_get_Random(Sefirot.CHANNELS), false, true)
+			_effect_Sefirah_Learn()
 		"The Tower":
-			pass
+			_effect_Card_Discard(cards.keys())
 		"The Star":
-			pass
+			_effect_HP_Restore(1)
+			_effect_Free_Move(1)
+			#yield(self, "next_Effect")
 		"The Moon":
-			pass
+			Sefirot.changePos(_get_Random(Sefirot.CHANNELS), false, false)
 		"The Sun":
-			pass
+			_effect_HP_Restore(999)
 		"Judgement":
 			_effect_Card_Discard_Selection(card_name, 1)
 			yield(self, "next_Effect")
@@ -79,17 +94,16 @@ func play_Card_Effect(card_name): #разыгрывает эффект пере�
 		"The World":
 			_effect_Sefirah_Learn()
 			_effect_HP_Restore()
+			Sefirot.changePos("Malkhut", false, false)
 
 #эффекты карт
 
-func effect_Continue():
-	for card_Index in cards:
-		cards[card_Index].deselect()
-	counter -= 1
+func _effect_Continue():
+	if counter > 0:
+		counter -= 1
+	emit_signal("iteration_Completed")
 	if counter == 0:
 		emit_signal("next_Effect")
-	emit_signal("iteration_Completed")
-
 
 
 
@@ -109,43 +123,66 @@ func _list_Cards_Not_Collected(): #возвращает список не соб
 
 
 
-func _effect_Card_Collect(card_Name: Array): #получает карты из переданного списка
-	for card in cards[card_Name]:
-		card.collect()
+func _effect_Card_Collect(cards_Name): #получает карты из переданного списка
+	if typeof(cards_Name) == TYPE_ARRAY:
+		for x in cards_Name:
+			cards[x].collect()
+	else: cards[cards_Name].collect()
 
 func _effect_Card_Collect_Selection(card_Name: String, amount: int): #подсвечивает карты для получения из переданного списка
+	if _list_Cards_Collected().size() > 21:
+		return
 	counter = amount
 	for x in range(amount):
 		cards[card_Name].set_Status("yellow")
-		cards[card_Temp].set_Status("gray")
 		for card_Index in cards:
 			cards[card_Index].collect_Selection()
 		yield(self, "iteration_Completed")
+	for card_Index in cards:
+		cards[card_Index].deselect()
 
 
 
-func _effect_Card_Discard(card_Name: Array): #сбрасывает карты из переданного списка
-	for card in cards[card_Name]:
-		card.discard()
+func _effect_Card_Discard(cards_Name): #сбрасывает карты из переданного списка
+	if typeof(cards_Name) == TYPE_ARRAY:
+		for x in cards_Name:
+			cards[x].discard()
+	else: cards[cards_Name].discard()
 
 func _effect_Card_Discard_Selection(card_Name: String, amount: int): #подсвечивает карты для сброса из переданного списка
+	if _list_Cards_Collected().size() < 1:
+		return
 	counter = amount
 	for x in range(amount):
 		cards[card_Name].set_Status("yellow")
 		for card_Index in cards:
 			cards[card_Index].discard_Selection()
 		yield(self, "iteration_Completed")
+	for card_Index in cards:
+		cards[card_Index].deselect()
 
+func _effect_Free_Move(amount):
+	counter = amount
+	Sefirot.free_Moves += amount
+	for c in cards:
+		cards[c].inactive()
+	for x in range(amount):
+		for z in Sefirot.Sefirah_Reference.values():
+			Sefirot.highlight(z)
+		yield(self, "iteration_Completed")
+	for z in Sefirot.Sefirah_Reference.values():
+		Sefirot.highlight(z, false)
+	for c in cards:
+		cards[c].deselect()
 
 func _get_Random(dictionary: Dictionary): #возвращает случайную карту из переданного словаря
 	randomize()
 	return dictionary.keys()[randi() % dictionary.size()]
 
 
-
 func _effect_HP_Restore(HP_Restored = 1): #изменяет здоровье на переданное значение
 		Player.health += HP_Restored
 
 
-func _effect_Sefirah_Learn(_sefirah = Sefirot.sefirahCurrent): #изучает переданную сефиру
-		Sefirot.sefirah_Learn(_sefirah)
+func _effect_Sefirah_Learn(_sefirah = Sefirot.sefirah_Current, amount = 1): #изучает переданную сефиру
+		Sefirot.sefirah_Learn(_sefirah, amount)
