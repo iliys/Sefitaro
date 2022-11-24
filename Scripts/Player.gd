@@ -2,20 +2,19 @@ extends Node2D
 
 onready var HP_Score = $"../HUD/HP/HP_Score"
 
-var health = 10 setget health_set, health_get
+var health = 10 setget _health_set, _health_get
 var health_max = 10
 
-func health_set(new_value): #установка здоровья
-	health = new_value
+func _health_set(new_value): #установка здоровья
+	health = new_value 
 	if health > health_max:
 		health = health_max
 	if health < 0:
-		death()
+		_death()
 	HP_Score.text = str(health)
 	
-func health_get(): #получение здоровья
+func _health_get(): #получение здоровья
 	return health
 
-func death(): #перезапуск игры
-	# warning-ignore:return_value_discarded
+func _death(): #перезапуск игры
 	get_tree().reload_current_scene()

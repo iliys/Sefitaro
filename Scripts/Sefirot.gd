@@ -1,7 +1,5 @@
 extends Node2D
 
-signal card_Update
-
 onready var player = $"../Player"
 onready var playerPos = $Malkhut
 onready var Cards = $"../HUD/Cards"
@@ -164,6 +162,11 @@ func _changePos(pos): #перемещение на целевую сефиру, 
 	_playerMove(pos)
 	_card_Get(sefirahLast, sefirahCurrent)
 
+func _card_Get(_sefirahLast, _sefirahCurrent): #добавляет полученную после перемещения карту в инвентарь
+	for card in CARD_POS:
+		if CARD_POS[card].has(sefirahLast) && CARD_POS[card].has(sefirahCurrent):
+			Cards.cards[card].collect()
+
 func _playerMove(pos):  #перемещает игрока на целевую сефиру, отнимает усердие 
 	player.position = Sefirah_Position.get(pos)
 	playerPos = pos
@@ -175,99 +178,7 @@ func get_Sefirah_Position(): #получает координаты сефир
 		Sefirah_Reference[sefirah_Name] = sefirah
 		Sefirah_Position[sefirah_Name] = sefirah.global_position
 
-func _card_Get(_sefirahLast, _sefirahCurrent): #добавляет полученную после перемещения карту в инвентарь
-	for card in CARD_POS:
-		if CARD_POS[card].has(sefirahLast) && CARD_POS[card].has(sefirahCurrent):
-			emit_signal("card_Update", card)
-			print(card + " collected")
-
-func card_Effect(card_name): #разыгрывает эффект переданной карты
-	Cards.last_Card_Used = card_name
-	match card_name:
-		"The Fool":
-			pass
-		"The Magician":
-			pass
-		"The High Priestess":
-			pass
-		"The Empress":
-			pass
-		"The Emperor":
-			pass
-		"The Hierophant":
-			pass
-		"The Lovers":
-			pass
-		"The Chariot":
-			pass
-		"Strength":
-			pass
-		"The Hermit":
-			pass
-		"Wheel of Fortune":
-			pass
-		"Justice":
-			pass
-		"The Hanged Man":
-			pass
-		"Death":
-			pass
-		"Temperance":
-			pass
-		"The Devil":
-			pass
-		"The Tower":
-			pass
-		"The Star":
-			pass
-		"The Moon":
-			pass
-		"The Sun":
-			pass
-		"Judgement":
-			_effect_Card_Discard(card_name, 1, false)
-			yield(Cards, "cards_Effect_Finished")
-			_effect_Card_Aquire(card_name, 1, false)
-		"The World":
-			_effect_Sefirah_Learn()
-			player.health += 1
-
-func _effect_Card_Discard(caller, amount = 0,random = true):
-	if !amount:
-		for card in Cards.cards_In():
-			Cards.cards[card].set_status("white")
-	else:
-		if random:
-			for card_count in amount:
-				Cards.cards_In()[Cards.card_Random(Cards.cards_In())].set_status("white")
-		else:
-			Cards.cards_To_Discard = amount
-			for card in Cards.cards_In():
-				Cards.cards[card].set_status("red")
-			for card in Cards.cards_In(false):
-				Cards.cards[card].set_status("gray")
-			Cards.cards[caller].set_status("yellow")
-
-func _effect_Card_Aquire(caller, amount = 0,random = true):
-	if !amount:
-		for card in Cards.cards_In(false):
-			Cards.cards[card].set_status("green")
-	else:
-		if random:
-			for card_count in amount:
-				Cards.cards_In(false)[Cards.card_Random(Cards.cards_In(false))].set_status("green")
-		else:
-			Cards.cards_To_Aquire = amount
-			for card in Cards.cards_In(false):
-				Cards.cards[card].set_status("palegreen")
-			for card in Cards.cards_In():
-				Cards.cards[card].set_status("gray")
-			Cards.cards[caller].set_status("yellow")
-
-func _effect_Sefirah_Learn(): #изучает сефиру
-	sefirah_Learned[sefirahCurrent] += 1
-	Sefirah_Reference[sefirahCurrent].modulate = Color.white
-	print(sefirahCurrent + " learned")
-
-#component functions
-
+func sefirah_Learn(_sefirah): #изучает переданную сефиру. Вызывается из Cards
+	sefirah_Learned[_sefirah] += 1
+	Sefirah_Reference[_sefirah].modulate = Color.white
+	print(_sefirah + " learned")

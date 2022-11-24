@@ -1,29 +1,25 @@
 extends Label
 
-onready var Sefirot = $"../../../Sefirot"
+signal effect_Continue
 
-var is_Collected: bool = false
+onready var Cards = get_parent()
 
-var card_Status: String = "white"
-
-var is_Discarding: bool = false
-signal is_Discarded
-
-var is_Aquiring: bool = false
-signal is_Aquired
-
-var pos = []
+var _status: String
 
 var description: String
 
+var is_Collected: bool
+
+
 func _ready(): #подключает сигнал для обновления состояния карт
-	Sefirot.connect("card_Update", self, "card_Update")
+	connect("effect_Continue", Cards, "effect_Continue")
+	set_Status("white")
 
 func _on_Card_mouse_entered(): #подсвечивает карту
 	highlight()
 
 func _on_Card_mouse_exited(): #отключает подсветку карты
-		highlight(false)
+	highlight(false)
 	
 func highlight(on = true): #подсвечивка карты
 	if on:
@@ -31,55 +27,79 @@ func highlight(on = true): #подсвечивка карты
 	else:
 		rect_scale = Vector2.ONE
 
-func card_Update(card): #эмиттер - Sefirot. Обновляет состояние полученной карты
-	if name == card:
-			set_status("green")
-
-func set_status(status): #устанавливает переданный статус
+func set_Status(status): #устанавливает переданный статус
 	match status:
 		"white": #карта на столе
 			is_Collected = false
-			_set_color(Color.white)
+			_set_Color(Color.white)
 		"green": #карта в руке
 			is_Collected = true
-			_set_color(Color.green)
+			_set_Color(Color.green)
 		"palegreen": #цель для подбора карты
-			_set_color(Color.aquamarine)
-			is_Aquiring = true
+			is_Collected = false
+			_set_Color(Color.aquamarine)
 		"yellow": #источник эффекта
 			is_Collected = true
-			_set_color(Color.yellow)
+			_set_Color(Color.yellow)
 		"red": #цель для сброса карты
-			is_Discarding = true
-			_set_color(Color.orangered)
+			is_Collected = true
+			_set_Color(Color.orangered)
 		"gray": #не активна
-			_set_color(Color.dimgray)
-	card_Status = status
-
-func _set_color(color: Color): #устанавливает цвет карты
-	self.add_color_override("font_color", color)
+			is_Collected = true
+			_set_Color(Color.dimgray)
+	_status = status
 
 func _on_Card_Instance_gui_input(event): #активирует карты по нажатию мыши с учетом их статуса
 	if event is InputEventMouseButton && event.is_pressed():
-		match card_Status:
+		match _status:
 			"white": #не активна
-				print(name + " not Aquired")
-			"green": #использует карту, запускает её эффект
-				print(name + " used")
-				set_status("white")
-				effect(name)
+				none()
+			"green": #сбрасывает карту, активирует её эффект
+				_Play_Card_Effect()
 			"palegreen": #получает карту
-				print(name + " aquired")
-				set_status("green")
-				emit_signal("is_Aquired") #принимает - Sefirot.effect_Card_Aquire()
+				collect()
 			"yellow": #не активна
-				print(name + "unable to use right now")
+				none()
 			"red": #сбрасывает карту
-				print(name + " discarded")
-				set_status("white")
-				emit_signal("is_Discarded") #принимает - Sefirot.effect_Card_Discard()
+				discard()
 			"gray": #не активна
-				print(name + " can't use it right now")
+				none()
 
-func effect(card_Name): #разыгрывает эффект переданной карты
-	Sefirot.card_Effect(card_Name)
+func _set_Color(color: Color): #устанавливает цвет карты
+	self.add_color_override("font_color", color)
+
+func _Play_Card_Effect(): #разыгрывает эффект переданной карты
+	#discard() # ВРЕМЕННО
+	Cards.play_Card_Effect(name)
+	print(name + " played")
+
+func collect(): #собирает карту
+	set_Status("green")
+	print(name + " collected")
+
+func collect_Selection(): #подсвечивает карту для получения
+	set_Status("palegreen")
+	#print(name + " able to aquire")
+
+func discard(): #сбрасывает карту
+	set_Status("white")
+	print(name + " discarded")
+	if Cards.counter > 0:
+		emit_signal("effect_Continue")
+
+func discard_Selection(): #подсвечивает карту для сброса
+	if _status != "yellow":
+		set_Status("red")
+	#print(name + " is getting discarded")
+
+func deselect():
+	if _status == "yellow" or _status == "palegreen":
+		set_Status("white")
+	if _status == "red":
+		set_Status("green")
+
+func inactive(): #подсвечивает карту как неактивную
+	set_Status("gray")
+
+func none(): #нет эффекта
+	print(name + " can't be used right now")
