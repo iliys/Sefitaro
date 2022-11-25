@@ -28,73 +28,77 @@ func _ready(): #инстанцирует карты внутри себя
 		cards[card] = c
 		add_child(c)
 
-func play_Card_Effect(card_name): #разыгрывает эффект переданной карты
-	last_Card_Played = card_name
-	cards[card_name].discard()
-	match card_name:
+func play_Card_Effect(card_Name): #разыгрывает эффект переданной карты
+	last_Card_Played = card_Name
+	cards[card_Name].discard()
+	match card_Name:
 		"The Fool":
+			_effect_Sefirah_Learn()
 			Sefirot.changePos("Malkhut", false, false)
-			_effect_Sefirah_Learn()
+			_effect_Sefirah_Learn(false)
 		"The Magician":
-			_effect_Card_Collect_Selection(card_name, 1)
+			_effect_Card_Collect_Selection(card_Name, 1)
 		"The High Priestess":
-			pass
+			_effect_HP_Restore(999)
 		"The Empress":
-			pass
+			_effect_Card_Collect_Selection(card_Name, 1)
 		"The Emperor":
-			_effect_HP_Restore()
-			_effect_Sefirah_Learn()
-			_effect_Free_Move(1)
+			_effect_HP_Restore(1)
+			_effect_Free_Move(card_Name, 1)
+			_effect_HP_Restore(1)
 		"The Hierophant":
-			pass
+			_effect_Sefirah_Learn()
 		"The Lovers":
-			pass
+			_effect_Card_Discard_Selection(card_Name, 1)
+			yield(self, "next_Effect")
+			_effect_Card_Collect_Selection(card_Name, 1)
 		"The Chariot":
+			_effect_Free_Move_Around(card_Name, 1)
 			_effect_HP_Restore()
-			_effect_Free_Move(1)
 			yield(self, "next_Effect")
 			_effect_Sefirah_Learn()
 		"Strength":
 			_effect_Sefirah_Learn()
 			_effect_HP_Restore()
 		"The Hermit":
-			pass
+			_effect_Sefirah_Learn(-1)
+			_effect_Card_Collect(_get_Random(cards))
 		"Wheel of Fortune":
 			_effect_Card_Collect(_get_Random(cards))
 		"Justice":
-			_effect_Sefirah_Learn(Sefirot.sefirah_Current, Sefirot.sefirah_Learned[Sefirot.sefirah_Last])
+			_effect_Sefirah_Learn(Sefirot.sefirah_Learned[Sefirot.sefirah_Last], Sefirot.sefirah_Current)
 		"The Hanged Man":
 			Sefirot.changePos(Sefirot.sefirah_Last, false, false)
 		"Death":
-			_effect_HP_Restore(999)
+			_effect_HP_Restore(1)
 			Sefirot.changePos("Malkhut", false, false)
-			_effect_Card_Discard(cards.keys())
+			_effect_Card_Discard(card_Name)
 		"Temperance":
-			_effect_Card_Discard_Selection(card_name, 1)
+			_effect_Card_Discard_Selection(card_Name, 1)
 			yield(self, "next_Effect")
 			_effect_Sefirah_Learn()
 		"The Devil":
 			_effect_HP_Restore(1)
 			Sefirot.changePos(_get_Random(Sefirot.CHANNELS), false, true)
-			_effect_Sefirah_Learn()
 		"The Tower":
-			_effect_Card_Discard(cards.keys())
+			_effect_Card_Discard(card_Name)
+			_effect_Card_Collect_Selection(card_Name, 1)
 		"The Star":
 			_effect_HP_Restore(1)
-			_effect_Free_Move(1)
+			_effect_Free_Move(card_Name, 1)
 			#yield(self, "next_Effect")
 		"The Moon":
 			Sefirot.changePos(_get_Random(Sefirot.CHANNELS), false, false)
 		"The Sun":
-			_effect_HP_Restore(999)
+			_effect_HP_Restore(1)
 		"Judgement":
-			_effect_Card_Discard_Selection(card_name, 1)
+			_effect_Card_Discard_Selection(card_Name, 1)
 			yield(self, "next_Effect")
-			_effect_Card_Collect_Selection(card_name, 1)
+			_effect_Card_Collect_Selection(card_Name, 1)
 		"The World":
-			_effect_Sefirah_Learn()
-			_effect_HP_Restore()
+			#_effect_HP_Restore()
 			Sefirot.changePos("Malkhut", false, false)
+			_effect_Sefirah_Learn()
 
 #эффекты карт
 
@@ -129,7 +133,7 @@ func _effect_Card_Collect(cards_Name): #получает карты из пер�
 			cards[x].collect()
 	else: cards[cards_Name].collect()
 
-func _effect_Card_Collect_Selection(card_Name: String, amount: int): #подсвечивает карты для получения из переданного списка
+func _effect_Card_Collect_Selection(card_Name: String, amount: int = 1): #подсвечивает карты для получения из переданного списка
 	if _list_Cards_Collected().size() > 21:
 		return
 	counter = amount
@@ -143,16 +147,16 @@ func _effect_Card_Collect_Selection(card_Name: String, amount: int): #подсв
 
 
 
-func _effect_Card_Discard(cards_Name): #сбрасывает карты из переданного списка
-	if typeof(cards_Name) == TYPE_ARRAY:
-		for x in cards_Name:
-			cards[x].discard()
-	else: cards[cards_Name].discard()
+func _effect_Card_Discard(card_Name: String): #сбрасывает карты из переданного списка
+	cards[card_Name].set_Status("yellow")
+	for card_Index in cards:
+		cards[card_Index].discard()
+	cards[card_Name].deselect()
 
-func _effect_Card_Discard_Selection(card_Name: String, amount: int): #подсвечивает карты для сброса из переданного списка
+func _effect_Card_Discard_Selection(card_Name: String, amount: int = 1): #подсвечивает карты для сброса из переданного списка
 	if _list_Cards_Collected().size() < 1:
 		return
-	counter = amount
+	counter = amount 
 	for x in range(amount):
 		cards[card_Name].set_Status("yellow")
 		for card_Index in cards:
@@ -161,14 +165,30 @@ func _effect_Card_Discard_Selection(card_Name: String, amount: int): #подсв
 	for card_Index in cards:
 		cards[card_Index].deselect()
 
-func _effect_Free_Move(amount):
+func _effect_Free_Move(card_Name, amount = 1):
 	counter = amount
-	Sefirot.free_Moves += amount
+	Sefirot.free_Moves = amount
 	for c in cards:
 		cards[c].inactive()
 	for x in range(amount):
 		for z in Sefirot.Sefirah_Reference.values():
 			Sefirot.highlight(z)
+		yield(self, "iteration_Completed")
+	for z in Sefirot.Sefirah_Reference.values():
+		Sefirot.highlight(z, false)
+	for c in cards:
+		cards[c].deselect()
+
+func _effect_Free_Move_Around(card_Name, amount = 1):
+	counter = amount
+	Sefirot.free_Moves = amount
+	cards[card_Name].set_Status("yellow")
+	for c in cards:
+		cards[c].inactive()
+	#cards[card_Name].is_Collected = false
+	for x in range(amount):
+		for v in Sefirot.CHANNELS[Sefirot.sefirah_Current]:
+			Sefirot.highlight(Sefirot.Sefirah_Reference[v])
 		yield(self, "iteration_Completed")
 	for z in Sefirot.Sefirah_Reference.values():
 		Sefirot.highlight(z, false)
@@ -184,5 +204,5 @@ func _effect_HP_Restore(HP_Restored = 1): #изменяет здоровье н�
 		Player.health += HP_Restored
 
 
-func _effect_Sefirah_Learn(_sefirah = Sefirot.sefirah_Current, amount = 1): #изучает переданную сефиру
+func _effect_Sefirah_Learn(amount = true, _sefirah = Sefirot.sefirah_Current): #изучает переданную сефиру
 		Sefirot.sefirah_Learn(_sefirah, amount)

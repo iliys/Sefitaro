@@ -8,9 +8,14 @@ onready var Cards = $"../HUD/Cards"
 
 var sefirah_Current = "Malkhut"
 var sefirah_Last
+var sefirah_Temp
 
 var mouseTarget
 var targetName
+
+var channel_Highlight
+var channel_Highlight_1
+var channel_Highlight_2
 
 var free_Moves = 0
 
@@ -24,7 +29,7 @@ func _ready():
 	_get_Sefirah_Position() #получает координаты сефир
 
 func _process(_delta):
-	update() #обновляет рисунок. Предполагаемая причина асинхронного ввода с мыши
+	update() #обновляет рисунок. Предполагаемая причина багов при быстром нажатии клавиш
 
 func _draw(): #функция для работы с рисунками
 	_draw_Channels()
@@ -37,28 +42,43 @@ func _draw_Channels(): #рисует и обновляет линии
 		else:
 			draw_line(Sefirah_Position[CARD_POS.get(channel)[0]], 
 			Sefirah_Position[CARD_POS.get(channel)[1]], Color.red, 2)
+		if channel_Highlight:
+			draw_line(Sefirah_Position[channel_Highlight_1], 
+			Sefirah_Position[channel_Highlight_2], Color.violet, 3)
 
 func on_Mouse_Target(target): #вызывается из сефир. Назначает целевую сефиру
 	if Cards.counter == 0:
 		targetName = target.get_name()
 		if CHANNELS.get(sefirah_Current).has(targetName):
+			channel_Highlight = true
+			channel_Highlight_1 = sefirah_Current
+			channel_Highlight_2 = targetName
 			mouseTarget = targetName
 			highlight(target)
 	if free_Moves > 0:
 		mouseTarget = target.get_name()
-		
+	for card in CARD_POS:
+		if CARD_POS[card].has(mouseTarget) && CARD_POS[card].has(sefirah_Current):
+			Cards.cards[card].highlight() 
 
 func on_Mouse_Target_out(target): #вызывается из сефир. Удаляет значение целевой сефиры
+	channel_Highlight = false
+	for card in CARD_POS:
+		if CARD_POS[card].has(mouseTarget) && CARD_POS[card].has(sefirah_Current):
+			Cards.cards[card].highlight(false)
 	if free_Moves > 0:
 		return
 	mouseTarget = null
 	highlight(target, false)
-
 func highlight(target, on = true): #подсвечивает целевую сефиру
 	if on:
+		target.get_child(2).modulate = Color.violet
 		target.scale = Vector2( 1.3, 1.3 )
 	else:
 		target.scale = Vector2.ONE
+		if sefirah_Learned[target.name]:
+			target.get_child(2).modulate = Color.green
+		else: target.get_child(2).modulate = Color.darkgray
 
 func _input(event): #перемещение на целевую сефиру по нажатию мыши
 	if event is InputEventMouseButton && event.is_pressed():
@@ -93,23 +113,26 @@ func _get_Sefirah_Position(): #получает координаты сефир
 		Sefirah_Position[sefirah_Name] = sefirah.global_position
 
 func sefirah_Learn(_sefirah, amount): #изучает переданную сефиру. Вызывается из Cards
-	if amount != 0:
-		sefirah_Learned[_sefirah] += amount
-		Sefirah_Reference[_sefirah].modulate = Color.white
+	sefirah_Learned[_sefirah] = amount
+	if amount:
+		Sefirah_Reference[_sefirah].get_child(2).modulate = Color.green
 		print(_sefirah + " learned")
+	elif !amount:
+		Sefirah_Reference[_sefirah].get_child(2).modulate = Color.darkgray
+		print(_sefirah + " forgotten")
 
 var sefirah_Learned = {
 	#"Daath": 0,
-	"Kether": 0,
-	"Hokmah": 0,
-	"Binah": 0,
-	"Hesed": 0,
-	"Gevurah": 0,
-	"Tiferet": 0,
-	"Netzah": 0,
-	"Hod": 0,
-	"Yesod": 0,
-	"Malkhut": 0
+	"Kether": false,
+	"Hokmah": false,
+	"Binah": false,
+	"Hesed": false,
+	"Gevurah": false,
+	"Tiferet": false,
+	"Netzah": false,
+	"Hod": false,
+	"Yesod": false,
+	"Malkhut": false
 	}
 
 const CHANNELS = {
@@ -152,38 +175,38 @@ const CARD_POS = {
 	}
 
 const CARD_DESCRIPTION = {
-	"The Fool": "Перемещает в Малькут и изучает его",
-	"The Magician": "Дает любую карту, изучает примыкающие к ней сефирот",
-	"The High Priestess": "Восстанавливает 2 силы. Даёт случайную карту из трех",
-	"The Empress": "Восстанавливает 4 силы, даёт случайную карту за восстановленную сверх предела силу",
-	"The Emperor": "Перемещает в выбранную сефиру и изучает её",
-	"The Hierophant": "Восстанавливает силу, изучает сефиру",
-	"The Lovers": "Изучает последнюю сефиру. забывает текущую",
-	"The Chariot": "Перемещает в следующую сефиру, изучает её",
-	"Strength": "Восстанавливает силу, изучает сефиру",
-	"The Hermit": "Изучает сефиру, активирует ближайшую аркану",
+	"The Fool": "Изучает сефиру. Перемещает в Малькут и забывает его",
+	"The Magician": "Даёт любую карту на выбор",
+	"The High Priestess": "Восстанавливает всё усердие",
+	"The Empress": "Даёт любую карту на выбор",
+	"The Emperor": "Перемещает в выбранную сефиру, восстанавливает 1 усердие",
+	"The Hierophant": "Изучает сефиру",
+	"The Lovers": "Сбрасывает выбранную карту. Даёт любую карту на выбор",
+	"The Chariot": "Перемещает в соседнюю сефиру и изучает её",
+	"Strength": "Восстанавливает одно усердие, изучает сефиру",
+	"The Hermit": "Забывает сефиру, даёт любую карту на выбор",
 	"Wheel of Fortune": "Даёт случайную карту",
-	"Justice": "Уравнивает уровни прошлой и текущей сефир",
+	"Justice": "Копирует статус предыдущей сефиры",
 	"The Hanged Man": "Перемещает на предыдущую сефиру",
-	"Death": "Сбрасывает все карты, перемещает в Малькут, восстанавливает силы",
-	"Temperance": "Уравнивает уровни между текущей и последней сефирой",
-	"The Devil": "Перемещает в случайную сефиру, изучает её",
-	"The Tower": "Сбрасывает все карты",
+	"Death": "Сбрасывает все карты и перемещает в Малькут, восстанавливает одно усердие",
+	"Temperance": "Сбрасывает выбранную карту. Изучает сефиру",
+	"The Devil": "Перемещает в случайную сефиру",
+	"The Tower": "Сбрасывает все карты, даёт любую карту на выбор",
 	"The Star": "Перемещает игрока в выбранную сефиру",
 	"The Moon": "Перемещает игрока в случайную сефиру",
-	"The Sun": "Восстанавливает все силы",
-	"Judgement": "Сбрасывает выбранную карту, даёт случайную карту из трех",
-	"The World": "Изучает сефиру N раз, где N - число карт на руке, которые пропадают. Восстанавливает все силы"
+	"The Sun": "Восстанавливает одно усердие",
+	"Judgement": "Сбрасывает выбранную карту, даёт любую карту на выбор",
+	"The World": "Возвращает в Малькут и изучает его"
 	}
 
 const CARD_TRANSLATION = {
-	"The Fool": "Дур",
+	"The Fool": "Шут",
 	"The Magician": "Маг",
-	"The High Priestess": "Жрица",
+	"The High Priestess": "Верховная жрица",
 	"The Empress": "Императрица",
 	"The Emperor": "Император",
-	"The Hierophant": "Папа",
-	"The Lovers": "Любовники",
+	"The Hierophant": "Иерофант",
+	"The Lovers": "Влюбленные",
 	"The Chariot": "Колесница",
 	"Strength": "Сила",
 	"The Hermit": "Отшельник",

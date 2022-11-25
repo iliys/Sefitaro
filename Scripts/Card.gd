@@ -2,7 +2,9 @@ extends Label
 
 signal effect_Continue
 
+onready var Sefirot = $"../../../Sefirot"
 onready var Cards = get_parent()
+onready var descriptions = $"../../Card Label"
 
 onready var Player = Player
 
@@ -27,8 +29,15 @@ func _on_Card_mouse_exited(): #отключает подсветку карты
 func highlight(on = true): #подсвечивка карты
 	if on:
 		rect_scale = Vector2(1.3, 1.3)
+		descriptions.text = Sefirot.CARD_TRANSLATION[name] + " - " + Sefirot.CARD_DESCRIPTION[name]
+		Sefirot.channel_Highlight = true
+		Sefirot.channel_Highlight_1 = Sefirot.CARD_POS[name][0]
+		Sefirot.channel_Highlight_2 = Sefirot.CARD_POS[name][1]
+		
 	else:
 		rect_scale = Vector2.ONE
+		#descriptions.text = ""
+		#Sefirot.channel_Highlight = false
 
 func set_Status(status): #устанавливает переданный статус
 	match status:
@@ -72,7 +81,6 @@ func _set_Color(color: Color): #устанавливает цвет карты
 	self.add_color_override("font_color", color)
 
 func _Play_Card_Effect(): #разыгрывает эффект переданной карты
-	#discard() # ВРЕМЕННО
 	Cards.play_Card_Effect(name)
 	print(name + " played")
 
@@ -90,12 +98,14 @@ func collect_Selection(): #подсвечивает карту для получ
 	#print(name + " able to aquire")
 
 func discard(): #сбрасывает карту
-	set_Status("white")
 	Cards.card_Temp = name
-	print(name + " discarded")
 	if Cards.counter > 0:
 		emit_signal("effect_Continue")
-
+	if _status == "yellow":
+		return
+	set_Status("white")
+	print(name + " discarded")
+	
 func discard_Selection(): #подсвечивает карту для сброса
 	if _status == "green":
 		set_Status("red")
@@ -110,7 +120,8 @@ func deselect():
 		set_Status("green")
 
 func inactive(): #подсвечивает карту как неактивную
-	set_Status("gray")
+	if _status == "green" or _status == "white":
+		set_Status("gray")
 
 func none(): #нет эффекта
 	print(name + " can't be used right now")
